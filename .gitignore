@@ -8,3 +8,4 @@ build/
 *.zip
 *.log
 .vercel/
+.vercel
