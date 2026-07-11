@@ -1,0 +1,435 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thực Đơn Món Ăn | Totoro Nướng & Sushi Đà Nẵng</title>
+    
+    <!-- Meta SEO -->
+    <meta name="description" content="Khám phá thực đơn nướng Yakiniku đa dạng và sushi sashimi tươi ngon chuẩn vị của Totoro Đà Nẵng. Tìm kiếm, lọc món cay, món chín và đặt món nhanh chóng.">
+    <meta name="keywords" content="thực đơn sushi, bò nướng wagyu, giá món sushi đà nẵng, sashimi cá hồi">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍣</text></svg>">
+
+    <!-- CSS stylesheets -->
+    <link rel="stylesheet" href="assets/css/variables.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/pages.css">
+</head>
+<body class="bg-wave-pattern">
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="header">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <span class="logo-stamp">TOTORO</span>
+                <span style="font-family: var(--font-heading); font-weight: 900; letter-spacing: 0.5px;">NƯỚNG & SUSHI</span>
+            </a>
+            
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-link">Trang Chủ</a>
+                <a href="ve-totoro.html" class="nav-link">Về Totoro</a>
+                <a href="menu.html" class="nav-link active">Thực Đơn</a>
+                <a href="dat-mon.html" class="nav-link">Đặt Món</a>
+                <a href="tin-tuc.html" class="nav-link">Tin Tức</a>
+                <a href="lien-he.html" class="nav-link">Liên Hệ</a>
+            </nav>
+            
+            <div class="nav-actions">
+                <a href="lien-he.html#booking-section" class="btn btn-primary btn-booking-nav" style="display: flex;">Đặt Bàn</a>
+                <a href="dat-mon.html" class="cart-trigger" aria-label="Giỏ hàng">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                    </svg>
+                    <span class="cart-badge" id="cart-badge-count" style="display: none;">0</span>
+                </a>
+                <button class="hamburger" aria-label="Menu di động">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MOBILE STICKY CTA BAR -->
+    <div class="mobile-cta-bar">
+        <a href="tel:0963979859" class="mobile-cta-item">
+            <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+            Gọi điện
+        </a>
+        <a href="menu.html" class="mobile-cta-item active">
+            <svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"/></svg>
+            Xem Menu
+        </a>
+        <a href="lien-he.html#booking-section" class="mobile-cta-item mobile-cta-item-highlight">
+            <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+            Đặt Bàn
+        </a>
+        <a href="dat-mon.html" class="mobile-cta-item">
+            <div style="position: relative;">
+                <svg viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                <span class="cart-badge" id="mobile-cart-badge-count" style="position: absolute; top: -5px; right: -8px; width: 16px; height: 16px; font-size: 9px; display: none;">0</span>
+            </div>
+            Đặt Món
+        </a>
+    </div>
+
+    <!-- MAIN APP WRAPPER -->
+    <main class="container section-padding">
+        
+        <!-- Page Title -->
+        <div class="section-title-wrapper reveal active" style="margin-bottom: 2rem;">
+            <span class="section-stamp-bg">MENU</span>
+            <h1 class="section-title">Thực Đơn Nhà Hàng</h1>
+            <div style="margin-top: 15px;">
+                <button type="button" class="btn btn-secondary" id="open-flipbook-btn" style="padding: 10px 24px; font-size: 14px; display: inline-flex; align-items: center; gap: 8px; box-shadow: var(--shadow-md);">
+                    📖 Xem Menu Sách Lật (Flipbook)
+                </button>
+            </div>
+        </div>
+
+        <!-- 1. SEARCH & FILTERS PANEL -->
+        <div class="menu-controls reveal active">
+            <!-- Row 1: Search and sorting -->
+            <div class="menu-search-row">
+                <input type="text" id="menu-search-input" class="form-control" placeholder="🔍 Nhập tên món ăn hoặc mô tả cần tìm..." />
+                
+                <select id="menu-sort-select" class="form-control" style="max-width: 200px;">
+                    <option value="default">Sắp xếp mặc định</option>
+                    <option value="bestseller">Món được yêu thích nhất</option>
+                    <option value="newest">Món mới cập nhật</option>
+                    <option value="price-asc">Giá từ thấp đến cao</option>
+                    <option value="price-desc">Giá từ cao đến thấp</option>
+                </select>
+            </div>
+
+            <!-- Row 2: Price range filter slider -->
+            <div style="display: flex; align-items: center; gap: 15px; margin-bottom: var(--spacing-md); flex-wrap: wrap;">
+                <span style="font-size: var(--font-size-sm); font-weight: 700; color: var(--color-secondary);">Khoảng giá tối đa:</span>
+                <input type="range" id="menu-price-range" min="30000" max="600000" step="10000" value="600000" style="flex-grow: 1; max-width: 300px; accent-color: var(--color-primary);" />
+                <strong id="menu-price-display" style="font-family: var(--font-heading); color: var(--color-primary);">600.000đ</strong>
+            </div>
+
+            <!-- Row 3: Category filter buttons -->
+            <div style="margin-bottom: var(--spacing-sm);">
+                <span style="display: block; font-size: var(--font-size-sm); font-weight: 700; margin-bottom: 8px; color: var(--color-secondary);">Danh mục thực đơn:</span>
+                <div class="menu-tags-filter" id="menu-categories-filter">
+                    <button class="filter-tag-btn active" data-category="all">Tất cả</button>
+                    <button class="filter-tag-btn" data-category="sushi">Sushi</button>
+                    <button class="filter-tag-btn" data-category="sashimi">Sashimi</button>
+                    <button class="filter-tag-btn" data-category="nuong">Món Nướng</button>
+                    <button class="filter-tag-btn" data-category="combo">Set Combo</button>
+                    <button class="filter-tag-btn" data-category="nong">Món Nóng</button>
+                    <button class="filter-tag-btn" data-category="khai-vi">Khai Vị</button>
+                    <button class="filter-tag-btn" data-category="salad">Salad</button>
+                    <button class="filter-tag-btn" data-category="drink">Đồ Uống</button>
+                </div>
+            </div>
+
+            <!-- Row 4: Food property filters -->
+            <div>
+                <span style="display: block; font-size: var(--font-size-sm); font-weight: 700; margin-bottom: 8px; color: var(--color-secondary);">Tùy chọn khẩu vị:</span>
+                <div class="menu-tags-filter">
+                    <button class="filter-tag-btn" data-prop="spicy">🌶️ Vị Cay</button>
+                    <button class="filter-tag-btn" data-prop="cooked">🍳 Món Chín</button>
+                    <button class="filter-tag-btn" data-prop="raw">🍣 Món Sống</button>
+                    <button class="filter-tag-btn" data-prop="childFriendly">👶 Cho Trẻ Em</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. MAIN MENU PRODUCTS GRID -->
+        <div class="product-grid reveal active" id="main-menu-grid" style="margin-bottom: var(--spacing-lg);">
+            <!-- Rendered dynamically by menu-filter.js -->
+        </div>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-about">
+                <a href="index.html" class="logo">
+                    <span class="logo-stamp">TOTORO</span>
+                    <span style="color: var(--color-gold);">NƯỚNG & SUSHI</span>
+                </a>
+                <p>Nhà hàng ẩm thực Nhật Bản hiện đại, năng động dành cho giới trẻ tại Đà Nẵng. Nơi sum họp bè bạn, chia sẻ niềm vui bên bàn tiệc nướng nghi ngút khói và những miếng sushi tươi mọng.</p>
+                <div class="social-icons">
+                    <a href="https://www.facebook.com/MoriSushiDaNang" class="social-icon" target="_blank" rel="noopener noreferrer">
+                        <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.989C18.343 21.129 22 16.99 22 12c0-5.523-4.477-10-10-10z"/></svg>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Liên Kết Nhanh</h4>
+                <ul>
+                    <li><a href="index.html">Trang Chủ</a></li>
+                    <li><a href="ve-totoro.html">Về Totoro</a></li>
+                    <li><a href="menu.html">Thực Đơn</a></li>
+                    <li><a href="dat-mon.html">Đặt Món Online</a></li>
+                    <li><a href="tin-tuc.html">Khuyến Mãi</a></li>
+                    <li><a href="lien-he.html">Liên Hệ</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-contact">
+                <h4>Thông Tin</h4>
+                <p>📍 <strong>Địa chỉ:</strong> 51 Châu Thị Vĩnh Tế, phường Mỹ An, quận Ngũ Hành Sơn, Đà Nẵng</p>
+                <p>📞 <strong>Hotline:</strong> 0963 979 859 (Zalo)</p>
+                <p>✉️ <strong>Email:</strong> contact@totorosushi.vn</p>
+                <p>⏰ <strong>Giờ mở cửa:</strong> 10:30 - 22:30 (Mỗi ngày)</p>
+            </div>
+            
+            <div class="footer-map">
+                <h4>Bản Đồ</h4>
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3834.425867160759!2d108.23806287490333!3d16.043444888899896!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31421764eb806c99%3A0xc47e335272a27546!2zNTEgQ2jDonUgVGjhu4sgVsSpbmggVOG6eb8sIE3hu7kgQW4sIE5nxakgSMOgbmggU8ahbiwgRMOgIE7hurVuZyA1NTAwMDAsIFZp4buHdCBOYW0!5e0!3m2!1svi!2svn!4v1700000000000!5m2!1svi!2svn" 
+                    width="100%" 
+                    height="130" 
+                    style="border:0;" 
+                    allowfullscreen="" 
+                    loading="lazy" 
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+        </div>
+        
+        <div class="container footer-bottom">
+            <p>&copy; 2026 Totoro Nướng & Sushi Đà Nẵng. Bảo lưu mọi quyền.</p>
+            <div class="footer-policies">
+                <a href="#">Chính sách giao hàng</a>
+                <a href="#">Thanh toán</a>
+                <a href="#">Bảo mật</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- PRODUCT DETAILS MODAL -->
+    <div class="modal" id="product-detail-modal">
+        <div class="modal-content">
+            <div class="modal-close-btn">✕</div>
+            <div class="modal-grid">
+                <div class="modal-img-wrapper">
+                    <img src="" alt="" class="modal-img" />
+                </div>
+                <div class="modal-body">
+                    <h3 class="modal-title"></h3>
+                    <span class="modal-price"></span>
+                    <p class="modal-desc"></p>
+                    
+                    <div style="display: flex; align-items: center; gap: 15px; margin-top: 15px;">
+                        <span>Số lượng:</span>
+                        <div class="quantity-control">
+                            <button class="quantity-btn qty-minus">-</button>
+                            <input type="number" class="quantity-input" value="1" readonly />
+                            <button class="quantity-btn qty-plus">+</button>
+                        </div>
+                    </div>
+                    
+                    <button class="btn btn-primary" id="modal-add-to-cart-btn" style="width: 100%; margin-top: 20px;">Thêm Vào Giỏ Hàng</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- FLIPBOOK MODAL -->
+    <div class="modal" id="flipbook-modal">
+        <div class="modal-content flipbook-modal-content" style="max-width: 900px; padding: 20px;">
+            <div class="modal-close-btn" id="close-flipbook-modal-btn">✕</div>
+            <h3 class="text-center" style="margin-bottom: 20px; font-family: var(--font-heading); color: var(--color-primary); font-weight: 800; text-transform: uppercase; letter-spacing: 1px;">📖 THỰC ĐƠN SÁCH LẬT TOTORO (PDF)</h3>
+            
+            <div style="display: flex; justify-content: center; align-items: center; padding: 10px 0;">
+                <div class="flip-book" id="menu-flipbook">
+                    <!-- Dynamic PDF Pages will be rendered here as canvases -->
+                </div>
+            </div>
+
+            <!-- Page flip controls info -->
+            <div class="text-center" style="margin-top: 20px;">
+                <p style="font-size: 12px; color: var(--color-text-muted); margin-bottom: 12px;">💡 Mẹo: Nhấp hoặc kéo thả các góc trang để lật nhanh như sách thật.</p>
+                <div style="display: flex; justify-content: center; gap: 15px;">
+                    <button type="button" class="btn btn-outline" id="flipbook-prev-btn" style="padding: 8px 20px; font-size: 12px;">◀ Trang Trước</button>
+                    <button type="button" class="btn btn-outline" id="flipbook-next-btn" style="padding: 8px 20px; font-size: 12px;">Trang Sau ▶</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Script assets -->
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/menu-filter.js"></script>
+    <script src="assets/js/cart.js"></script>
+    <script src="assets/js/booking.js"></script>
+
+    <!-- PDF.js and StPageFlip Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/page-flip/dist/js/page-flip.browser.min.js"></script>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Check Category URL Redirects
+            const urlParams = new URLSearchParams(window.location.search);
+            const cat = urlParams.get('cat');
+            if (cat) {
+                const catBtn = document.querySelector(`.filter-tag-btn[data-category="${cat}"]`);
+                if (catBtn) {
+                    setTimeout(() => catBtn.click(), 100);
+                }
+            }
+
+            // Flipbook Modal and Dynamic PDF.js Rendering
+            const openBtn = document.getElementById('open-flipbook-btn');
+            const closeBtn = document.getElementById('close-flipbook-modal-btn');
+            const modal = document.getElementById('flipbook-modal');
+            const flipbookContainer = document.getElementById('menu-flipbook');
+            let pageFlip = null;
+            let isPdfLoaded = false;
+
+            if (openBtn && modal) {
+                openBtn.addEventListener('click', function() {
+                    modal.classList.add('open');
+                    
+                    if (isPdfLoaded) {
+                        return; // Avoid reloading PDF if already rendered
+                    }
+
+                    // Show loader spinner
+                    flipbookContainer.style.display = 'flex';
+                    flipbookContainer.innerHTML = `
+                        <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 400px; color: var(--color-primary);">
+                            <div class="loading-spinner" style="margin-bottom: 15px;"></div>
+                            <p style="font-weight: 700; font-family: var(--font-heading);">Đang nạp thực đơn PDF...</p>
+                        </div>
+                    `;
+
+                    // Setup PDF.js worker
+                    pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/2.16.105/pdf.worker.min.js';
+
+                    // Load the PDF file
+                    const pdfUrl = 'menu.pdf';
+                    pdfjsLib.getDocument(pdfUrl).promise.then(function(pdf) {
+                        // Clear loader
+                        flipbookContainer.innerHTML = '';
+                        flipbookContainer.style.display = 'block';
+
+                        const numPages = pdf.numPages;
+                        const pagePromises = [];
+
+                        // 1. Create containers and start rendering pages asynchronously
+                        for (let pageNum = 1; pageNum <= numPages; pageNum++) {
+                            const pageDiv = document.createElement('div');
+                            pageDiv.className = 'book-page';
+                            // Covers should be hard-bound density for page-flip effect
+                            pageDiv.setAttribute('data-density', (pageNum === 1 || pageNum === numPages) ? 'hard' : 'soft');
+
+                            const pageContentDiv = document.createElement('div');
+                            pageContentDiv.className = 'book-page-content';
+                            pageContentDiv.style.padding = '0';
+                            pageContentDiv.style.border = 'none';
+
+                            const canvas = document.createElement('canvas');
+                            canvas.style.width = '100%';
+                            canvas.style.height = '100%';
+                            canvas.style.display = 'block';
+
+                            pageContentDiv.appendChild(canvas);
+                            pageDiv.appendChild(pageContentDiv);
+                            flipbookContainer.appendChild(pageDiv);
+
+                            // Load and render page to canvas
+                            const renderPromise = pdf.getPage(pageNum).then(function(page) {
+                                const isMobile = window.innerWidth < 768;
+                                const scale = 1.5; // High resolution scale
+                                const viewport = page.getViewport({ scale: scale });
+                                const context = canvas.getContext('2d');
+                                
+                                canvas.height = viewport.height;
+                                canvas.width = viewport.width;
+
+                                const renderContext = {
+                                    canvasContext: context,
+                                    viewport: viewport
+                                };
+                                return page.render(renderContext).promise;
+                            });
+
+                            pagePromises.push(renderPromise);
+                        }
+
+                        // 2. Once all page canvases are fully rendered, initialize St.PageFlip
+                        Promise.all(pagePromises).then(function() {
+                            const isMobile = window.innerWidth < 768;
+                            
+                            pageFlip = new St.PageFlip(
+                                flipbookContainer,
+                                {
+                                    width: isMobile ? 310 : 380, // Page width
+                                    height: isMobile ? 450 : 520, // Page height
+                                    size: "fixed",
+                                    minWidth: 310,
+                                    maxWidth: 380,
+                                    minHeight: 450,
+                                    maxHeight: 520,
+                                    maxShadowOpacity: 0.4,
+                                    showCover: true,
+                                    mobileScrollSupport: false
+                                }
+                            );
+
+                            pageFlip.loadFromHTML(document.querySelectorAll(".book-page"));
+                            isPdfLoaded = true;
+
+                            // Bind control buttons
+                            document.getElementById('flipbook-prev-btn').onclick = () => {
+                                pageFlip.flipPrev();
+                            };
+                            document.getElementById('flipbook-next-btn').onclick = () => {
+                                pageFlip.flipNext();
+                            };
+                        });
+
+                    }).catch(function(error) {
+                        console.error("Lỗi nạp file PDF: ", error);
+                        // Friendly explanation of file:// protocol browser limits
+                        if (window.location.protocol === 'file:') {
+                            flipbookContainer.innerHTML = `
+                                <div style="padding: 40px var(--spacing-md); text-align: center; color: var(--color-primary); max-width: 450px; margin: 0 auto; background: white; border-radius: var(--radius-sm); border: 2px solid var(--color-primary);">
+                                    <span style="font-size: 50px;">⚠️</span>
+                                    <h3 style="margin-top: 15px; font-family: var(--font-heading); color: var(--color-red);">LỖI BẢO MẬT TRÌNH DUYỆT (CORS)</h3>
+                                    <p style="font-size: 13px; margin-top: 10px; color: var(--color-text-muted); line-height: 1.5;">
+                                        Trình duyệt bảo mật chặn tải file PDF trực tiếp khi mở file HTML dạng <strong>file://</strong>. Vui lòng xem qua link máy chủ local đang chạy:
+                                    </p>
+                                    <a href="http://localhost:8080/menu.html" style="display: inline-block; margin-top: 15px; background-color: var(--color-primary); color: white; padding: 10px 24px; border-radius: 30px; font-weight: 700; text-decoration: none; box-shadow: var(--shadow-sm);">➔ Xem Qua localhost:8080</a>
+                                </div>
+                            `;
+                        } else {
+                            flipbookContainer.innerHTML = `
+                                <div style="padding: 40px; text-align: center; color: var(--color-red); background: white; border-radius: var(--radius-sm);">
+                                    <span style="font-size: 50px;">⚠️</span>
+                                    <h3 style="margin-top: 15px; font-family: var(--font-heading);">Không Thể Tải File PDF Thực Đơn</h3>
+                                    <p style="font-size: 13px; margin-top: 10px; color: var(--color-text-muted);">Vui lòng kiểm tra lại sự tồn tại của file <strong>menu.pdf</strong> ở thư mục gốc dự án.</p>
+                                </div>
+                            `;
+                        }
+                    });
+                });
+            }
+
+            if (closeBtn && modal) {
+                closeBtn.addEventListener('click', function() {
+                    modal.classList.remove('open');
+                });
+                
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) {
+                        modal.classList.remove('open');
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

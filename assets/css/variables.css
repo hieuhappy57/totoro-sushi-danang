@@ -1,0 +1,129 @@
+/* Totoro Nướng & Sushi Design System - CSS Variables */
+
+@import url('https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,300..900;1,300..900&family=Be+Vietnam+Pro:ital,wght@0,300;0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+
+:root {
+    /* Colors - Japanese Pop Contemporary */
+    --color-red: #D9383A;
+    --color-dark: #13131A;
+    --color-light: #FAF7F2;
+    --color-gold: #E6AF2E;
+    --color-green: #7DA038;
+    --color-white: #FFFFFF;
+    
+    /* Semantic Colors */
+    --color-primary: var(--color-red);
+    --color-secondary: var(--color-dark);
+    --color-bg: var(--color-light);
+    --color-accent: var(--color-gold);
+    --color-success: var(--color-green);
+    --color-text-dark: #23232C;
+    --color-text-muted: #6B6B76;
+    --color-border: rgba(19, 19, 26, 0.08);
+    --color-card-bg: rgba(255, 255, 255, 0.85);
+
+    /* Fonts */
+    --font-heading: 'Montserrat', sans-serif;
+    --font-body: 'Be Vietnam Pro', sans-serif;
+
+    /* Spacing */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2.5rem;
+    --spacing-xl: 4rem;
+
+    /* Typography Scale */
+    --font-size-xs: 0.75rem;
+    --font-size-sm: 0.875rem;
+    --font-size-base: 1rem;
+    --font-size-md: 1.25rem;
+    --font-size-lg: 1.75rem;
+    --font-size-xl: 2.5rem;
+    --font-size-xxl: 3.5rem;
+
+    /* Shadow & Border Radius */
+    --radius-sm: 8px;
+    --radius-md: 16px;
+    --radius-lg: 24px;
+    --radius-full: 9999px;
+    
+    --shadow-sm: 0 4px 12px rgba(19, 19, 26, 0.04);
+    --shadow-md: 0 8px 24px rgba(19, 19, 26, 0.08);
+    --shadow-lg: 0 16px 48px rgba(19, 19, 26, 0.12);
+    --shadow-glow: 0 0 20px rgba(217, 56, 58, 0.3);
+
+    /* Animation Transitions */
+    --transition-smooth: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+    --transition-bounce: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+/* Global Reset & Base Styling */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-tap-highlight-color: transparent;
+}
+
+html {
+    scroll-behavior: smooth;
+    font-size: 16px;
+}
+
+body {
+    font-family: var(--font-body);
+    background-color: var(--color-bg);
+    color: var(--color-text-dark);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-heading);
+    font-weight: 800;
+    color: var(--color-secondary);
+    line-height: 1.2;
+}
+
+a {
+    color: inherit;
+    text-decoration: none;
+    transition: var(--transition-smooth);
+}
+
+img {
+    max-width: 100%;
+    height: auto;
+    display: block;
+}
+
+button, input, select, textarea {
+    font-family: inherit;
+    font-size: inherit;
+}
+
+li {
+    list-style: none;
+}
+
+/* Layout Constrained Grid */
+.container {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 var(--spacing-md);
+}
+
+.text-center {
+    text-align: center;
+}
+
+.section-padding {
+    padding: var(--spacing-xl) 0;
+}
+@media (max-width: 768px) {
+    .section-padding {
+        padding: var(--spacing-lg) 0;
+    }
+}

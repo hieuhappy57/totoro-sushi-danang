@@ -1,0 +1,535 @@
+/* Totoro Sushi & Grill - Main Stylesheet (style.css) */
+
+@import url('variables.css');
+
+/* --- HEADER & NAVIGATION --- */
+.header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--color-white);
+    box-shadow: var(--shadow-sm);
+    z-index: 1000;
+    transition: var(--transition-smooth);
+    border-bottom: 2px solid var(--color-primary);
+}
+
+.header.scrolled {
+    padding: var(--spacing-xs) 0;
+    box-shadow: var(--shadow-md);
+    background-color: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+}
+
+.nav-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 80px;
+    transition: var(--transition-smooth);
+}
+
+.header.scrolled .nav-container {
+    height: 64px;
+}
+
+/* Logo Design */
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-family: var(--font-heading);
+    font-weight: 900;
+    font-size: var(--font-size-md);
+    color: var(--color-primary);
+}
+
+.logo-stamp {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    padding: 6px 12px;
+    border-radius: 4px;
+    font-size: var(--font-size-sm);
+    letter-spacing: 1px;
+    transform: rotate(-3deg);
+    box-shadow: var(--shadow-sm);
+    display: inline-block;
+    border: 2px dashed var(--color-white);
+}
+
+/* Nav Menu Desktop */
+.nav-menu {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-md);
+}
+
+.nav-link {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: var(--font-size-sm);
+    color: var(--color-text-dark);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 6px 12px;
+    border-radius: var(--radius-sm);
+}
+
+.nav-link:hover, .nav-link.active {
+    color: var(--color-primary);
+    background-color: rgba(219, 56, 58, 0.06);
+}
+
+/* Header Action Right */
+.nav-actions {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 10px 24px;
+    border-radius: var(--radius-full);
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: var(--font-size-sm);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: var(--transition-bounce);
+    border: none;
+    outline: none;
+}
+
+.btn-primary {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    box-shadow: 0 4px 12px rgba(219, 56, 58, 0.2);
+}
+
+.btn-primary:hover {
+    background-color: var(--color-secondary);
+    color: var(--color-white);
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(19, 19, 26, 0.2);
+}
+
+.btn-secondary {
+    background-color: var(--color-gold);
+    color: var(--color-secondary);
+    box-shadow: 0 4px 12px rgba(230, 175, 46, 0.2);
+}
+
+.btn-secondary:hover {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-glow);
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 2px solid var(--color-primary);
+    color: var(--color-primary);
+}
+
+.btn-outline:hover {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    transform: translateY(-2px);
+}
+
+/* Cart Icon */
+.cart-trigger {
+    position: relative;
+    width: 44px;
+    height: 44px;
+    border-radius: var(--radius-full);
+    background-color: var(--color-bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    border: 1px solid var(--color-border);
+}
+
+.cart-trigger svg {
+    width: 20px;
+    height: 20px;
+    fill: var(--color-text-dark);
+}
+
+.cart-trigger:hover {
+    background-color: var(--color-primary);
+}
+
+.cart-trigger:hover svg {
+    fill: var(--color-white);
+}
+
+.cart-badge {
+    position: absolute;
+    top: -4px;
+    right: -4px;
+    background-color: var(--color-gold);
+    color: var(--color-secondary);
+    font-size: var(--font-size-xs);
+    font-weight: 800;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--color-white);
+}
+
+/* Mobile Hamburger Menu */
+.hamburger {
+    display: none;
+    flex-direction: column;
+    justify-content: space-between;
+    width: 26px;
+    height: 18px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    z-index: 1100;
+}
+
+.hamburger span {
+    width: 100%;
+    height: 3px;
+    background-color: var(--color-secondary);
+    border-radius: 3px;
+    transition: var(--transition-smooth);
+}
+
+/* --- RESPONSIVE HEADER --- */
+@media (max-width: 992px) {
+    .hamburger {
+        display: flex;
+    }
+    
+    .nav-menu {
+        position: fixed;
+        top: 0;
+        right: -100%;
+        width: 280px;
+        height: 100vh;
+        background-color: var(--color-white);
+        box-shadow: var(--shadow-lg);
+        flex-direction: column;
+        align-items: flex-start;
+        padding: 100px var(--spacing-md) var(--spacing-md);
+        gap: var(--spacing-md);
+        transition: var(--transition-smooth);
+        z-index: 1050;
+    }
+
+    .nav-menu.open {
+        right: 0;
+    }
+
+    /* Hamburger animations */
+    .hamburger.open span:nth-child(1) {
+        transform: rotate(45deg) translate(5px, 5px);
+    }
+    .hamburger.open span:nth-child(2) {
+        opacity: 0;
+    }
+    .hamburger.open span:nth-child(3) {
+        transform: rotate(-45deg) translate(6px, -6px);
+    }
+}
+
+/* --- STICKY MOBILE CTA BAR --- */
+.mobile-cta-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    background-color: var(--color-white);
+    box-shadow: 0 -4px 16px rgba(19, 19, 26, 0.1);
+    display: none;
+    grid-template-columns: repeat(4, 1fr);
+    z-index: 999;
+    border-top: 1px solid var(--color-border);
+}
+
+.mobile-cta-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 10px var(--spacing-xs);
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--color-text-muted);
+    font-family: var(--font-heading);
+    text-transform: uppercase;
+}
+
+.mobile-cta-item svg {
+    width: 20px;
+    height: 20px;
+    margin-bottom: 4px;
+    fill: currentColor;
+}
+
+.mobile-cta-item.active, .mobile-cta-item:hover {
+    color: var(--color-primary);
+}
+
+.mobile-cta-item-highlight {
+    background-color: var(--color-primary);
+    color: var(--color-white) !important;
+}
+
+.mobile-cta-item-highlight:hover {
+    background-color: var(--color-secondary);
+}
+
+@media (max-width: 768px) {
+    .mobile-cta-bar {
+        display: grid;
+    }
+    body {
+        padding-bottom: 60px; /* Space for CTA bar */
+    }
+}
+
+/* --- GENERIC MAIN STYLING & DECORATIONS --- */
+main {
+    margin-top: 80px; /* Header spacing */
+}
+
+/* RED JAPANESE STAMP BADGE */
+.section-title-wrapper {
+    position: relative;
+    margin-bottom: var(--spacing-lg);
+    text-align: center;
+}
+
+.section-title {
+    font-size: var(--font-size-xl);
+    position: relative;
+    display: inline-block;
+    padding-bottom: 12px;
+}
+
+.section-title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 80px;
+    height: 4px;
+    background-color: var(--color-primary);
+    border-radius: var(--radius-full);
+}
+
+.section-stamp-bg {
+    position: absolute;
+    font-size: 80px;
+    font-family: Arial, sans-serif;
+    color: rgba(219, 56, 58, 0.03);
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -60%) rotate(-10deg);
+    pointer-events: none;
+    user-select: none;
+    font-weight: 900;
+}
+
+/* --- FOOTER --- */
+.footer {
+    background-color: var(--color-dark);
+    color: var(--color-light);
+    padding-top: var(--spacing-xl);
+    padding-bottom: var(--spacing-md);
+    font-size: var(--font-size-sm);
+    border-top: 5px solid var(--color-primary);
+}
+
+.footer h3, .footer h4 {
+    color: var(--color-gold);
+    margin-bottom: var(--spacing-md);
+    font-family: var(--font-heading);
+}
+
+.footer-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 2fr;
+    gap: var(--spacing-lg);
+    margin-bottom: var(--spacing-xl);
+}
+
+.footer-about p {
+    color: #A0A0AB;
+    margin-top: var(--spacing-sm);
+    line-height: 1.6;
+}
+
+.footer-links ul {
+    display: flex;
+    flex-direction: column;
+    gap: var(--spacing-xs);
+}
+
+.footer-links a {
+    color: #A0A0AB;
+}
+
+.footer-links a:hover {
+    color: var(--color-gold);
+    padding-left: 4px;
+}
+
+.footer-contact p {
+    margin-bottom: var(--spacing-xs);
+    color: #A0A0AB;
+}
+
+.footer-contact strong {
+    color: var(--color-white);
+}
+
+.footer-map iframe {
+    border-radius: var(--radius-md);
+    border: 2px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Social icons */
+.social-icons {
+    display: flex;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-md);
+}
+
+.social-icon {
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background-color: rgba(255, 255, 255, 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--color-white);
+}
+
+.social-icon:hover {
+    background-color: var(--color-primary);
+    color: var(--color-white);
+    transform: scale(1.1);
+}
+
+.social-icon svg {
+    width: 18px;
+    height: 18px;
+    fill: currentColor;
+}
+
+.footer-bottom {
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    padding-top: var(--spacing-md);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: #71717A;
+    flex-wrap: wrap;
+    gap: var(--spacing-sm);
+}
+
+.footer-policies a {
+    margin-left: var(--spacing-sm);
+    color: #71717A;
+}
+
+.footer-policies a:hover {
+    color: var(--color-gold);
+}
+
+@media (max-width: 992px) {
+    .footer-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+@media (max-width: 576px) {
+    .footer-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+    }
+    .footer-bottom {
+        flex-direction: column;
+        text-align: center;
+    }
+    .footer-policies {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+    }
+    .footer-policies a {
+        margin-left: 0;
+    }
+}
+
+/* --- COMMON MICRO-ANIMATIONS & UTILITIES --- */
+
+/* Scroll Reveal animation */
+.reveal {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: all 0.8s cubic-bezier(0.15, 0.85, 0.45, 1);
+}
+
+.reveal.active {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* Spin animation */
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.loading-spinner {
+    display: inline-block;
+    width: 24px;
+    height: 24px;
+    border: 3px solid rgba(219, 56, 58, 0.2);
+    border-radius: 50%;
+    border-top-color: var(--color-primary);
+    animation: spin 0.8s linear infinite;
+}
+
+/* Glassmorphism Generic Class */
+.glass-panel {
+    background: var(--color-card-bg);
+    backdrop-filter: blur(8px);
+    border: 1px solid rgba(255, 255, 255, 0.5);
+    box-shadow: var(--shadow-sm);
+    border-radius: var(--radius-md);
+    transition: var(--transition-bounce);
+}
+
+.glass-panel:hover {
+    box-shadow: var(--shadow-md);
+    border-color: rgba(219, 56, 58, 0.2);
+}
+
+/* Japanese wave pattern background */
+.bg-wave-pattern {
+    background-image: radial-gradient(circle at 100% 150%, transparent 24%, rgba(219, 56, 58, 0.02) 24%, rgba(219, 56, 58, 0.02) 28%, transparent 28%, transparent),
+                      radial-gradient(circle at 0% 150%, transparent 24%, rgba(219, 56, 58, 0.02) 24%, rgba(219, 56, 58, 0.02) 28%, transparent 28%, transparent),
+                      radial-gradient(circle at 50%  100%, rgba(219, 56, 58, 0.02) 20%, transparent 20%, transparent 40%, rgba(219, 56, 58, 0.02) 40%, rgba(219, 56, 58, 0.02) 44%, transparent 44%, transparent),
+                      radial-gradient(circle at 100% 50%, transparent 24%, rgba(219, 56, 58, 0.02) 24%, rgba(219, 56, 58, 0.02) 28%, transparent 28%, transparent),
+                      radial-gradient(circle at 0% 50%, transparent 24%, rgba(219, 56, 58, 0.02) 24%, rgba(219, 56, 58, 0.02) 28%, transparent 28%, transparent);
+    background-size: 40px 20px;
+}

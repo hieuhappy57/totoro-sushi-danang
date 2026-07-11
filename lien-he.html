@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Liên Hệ & Đặt Bàn | Totoro Nướng & Sushi Đà Nẵng</title>
+    
+    <!-- Meta SEO -->
+    <meta name="description" content="Liên hệ đặt bàn trước hoặc nhận chỉ đường Google Maps đến Totoro Nướng & Sushi Đà Nẵng tại 51 Châu Thị Vĩnh Tế. Giải đáp các câu hỏi thường gặp về đặt bàn tiệc nhóm.">
+    <meta name="keywords" content="địa chỉ sushi totoro đà nẵng, số điện thoại totoro sushi, đặt tiệc sinh nhật đà nẵng">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🍣</text></svg>">
+
+    <!-- CSS stylesheets -->
+    <link rel="stylesheet" href="assets/css/variables.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/pages.css">
+</head>
+<body class="bg-wave-pattern">
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="header">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <span class="logo-stamp">TOTORO</span>
+                <span style="font-family: var(--font-heading); font-weight: 900; letter-spacing: 0.5px;">NƯỚNG & SUSHI</span>
+            </a>
+            
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-link">Trang Chủ</a>
+                <a href="ve-totoro.html" class="nav-link">Về Totoro</a>
+                <a href="menu.html" class="nav-link">Thực Đơn</a>
+                <a href="dat-mon.html" class="nav-link">Đặt Món</a>
+                <a href="tin-tuc.html" class="nav-link">Tin Tức</a>
+                <a href="lien-he.html" class="nav-link active">Liên Hệ</a>
+            </nav>
+            
+            <div class="nav-actions">
+                <a href="lien-he.html#booking-section" class="btn btn-primary btn-booking-nav" style="display: flex;">Đặt Bàn</a>
+                <a href="dat-mon.html" class="cart-trigger" aria-label="Giỏ hàng">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+                        <path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/>
+                    </svg>
+                    <span class="cart-badge" id="cart-badge-count" style="display: none;">0</span>
+                </a>
+                <button class="hamburger" aria-label="Menu di động">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MOBILE STICKY CTA BAR -->
+    <div class="mobile-cta-bar">
+        <a href="tel:0963979859" class="mobile-cta-item">
+            <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+            Gọi điện
+        </a>
+        <a href="menu.html" class="mobile-cta-item">
+            <svg viewBox="0 0 24 24"><path d="M4 6H2v14c0 1.1.9 2 2 2h14v-2H4V6zm16-4H8c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zm-1 9H9V9h10v2zm-4 4H9v-2h6v2zm4-8H9V5h10v2z"/></svg>
+            Xem Menu
+        </a>
+        <a href="#booking-section" class="mobile-cta-item active mobile-cta-item-highlight">
+            <svg viewBox="0 0 24 24"><path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/></svg>
+            Đặt Bàn
+        </a>
+        <a href="dat-mon.html" class="mobile-cta-item">
+            <div style="position: relative;">
+                <svg viewBox="0 0 24 24"><path d="M7 18c-1.1 0-1.99.9-1.99 2S5.9 22 7 22s2-.9 2-2-.9-2-2-2zM1 2v2h2l3.6 7.59-1.35 2.45c-.16.28-.25.61-.25.96 0 1.1.9 2 2 2h12v-2H7.42c-.14 0-.25-.11-.25-.25l.03-.12.9-1.63h7.45c.75 0 1.41-.41 1.75-1.03l3.58-6.49c.08-.14.12-.31.12-.48 0-.55-.45-1-1-1H5.21l-.94-2H1zm16 16c-1.1 0-1.99.9-1.99 2s.89 2 1.99 2 2-.9 2-2-.9-2-2-2z"/></svg>
+                <span class="cart-badge" id="mobile-cart-badge-count" style="position: absolute; top: -5px; right: -8px; width: 16px; height: 16px; font-size: 9px; display: none;">0</span>
+            </div>
+            Đặt Món
+        </a>
+    </div>
+
+    <!-- MAIN APP WRAPPER -->
+    <main class="container section-padding">
+        
+        <!-- Page Title -->
+        <div class="section-title-wrapper reveal active" style="margin-bottom: 2rem;">
+            <span class="section-stamp-bg">CONTACT</span>
+            <h1 class="section-title">Liên Hệ & Chỉ Đường</h1>
+        </div>
+
+        <!-- 1. INFO & GOOGLE MAPS ROW -->
+        <div style="display: grid; grid-template-columns: 1.1fr 0.9fr; gap: var(--spacing-lg); align-items: start; margin-bottom: var(--spacing-lg);" class="reveal active">
+            <!-- Left Info Column -->
+            <div class="glass-panel" style="padding: var(--spacing-md);">
+                <h3 style="font-size: var(--font-size-md); color: var(--color-primary); margin-bottom: 10px;">THÔNG TIN NHÀ HÀNG</h3>
+                <h2 style="font-size: var(--font-size-lg); margin-bottom: var(--spacing-sm);">Totoro Nướng & Sushi Đà Nẵng</h2>
+                
+                <div style="display: flex; flex-direction: column; gap: var(--spacing-xs); margin: var(--spacing-sm) 0;">
+                    <p>📍 <strong>Địa chỉ chính thức:</strong> 51 Châu Thị Vĩnh Tế, phường Mỹ An, quận Ngũ Hành Sơn, Đà Nẵng</p>
+                    <p>📞 <strong>Hotline gọi món & đặt bàn:</strong> 0963 979 859 (Hỗ trợ Zalo 24/7)</p>
+                    <p>✉️ <strong>Email liên hệ:</strong> contact@totorosushi.vn</p>
+                    <p>⏰ <strong>Giờ phục vụ tại quán:</strong> 10:30 - 22:30 hằng ngày</p>
+                    <p>⏰ <strong>Khung giờ giao hàng online:</strong> 11:00 - 22:00 hằng ngày</p>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: var(--spacing-sm);">
+                    <a href="tel:0963979859" class="btn btn-primary">📞 Gọi hotline</a>
+                    <a href="https://zalo.me/0963979859" class="btn btn-outline" target="_blank" rel="noopener noreferrer">💬 Nhắn Zalo</a>
+                </div>
+            </div>
+
+            <!-- Right Google Maps Column -->
+            <div style="width: 100%; height: 320px; border-radius: var(--radius-md); overflow: hidden; box-shadow: var(--shadow-md); border: 2px solid var(--color-border);">
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3834.425867160759!2d108.23806287490333!3d16.043444888899896!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31421764eb806c99%3A0xc47e335272a27546!2zNTEgQ2jDonUgVGjhu4sgVsSpbmggVOG6eb8sIE3hu7kgQW4sIE5nxakgSMOgbmggU8ahbiwgRMOgIE7hurVuZyA1NTAwMDAsIFZp4buHdCBOYW0!5e0!3m2!1svi!2svn!4v1700000000000!5m2!1svi!2svn" 
+                    width="100%" 
+                    height="100%" 
+                    style="border:0;" 
+                    allowfullscreen="" 
+                    loading="lazy" 
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+        </div>
+
+        <!-- 2. TABLE BOOKING SECTION -->
+        <section class="section-padding" id="booking-section" style="border-top: 1px solid var(--color-border);">
+            <div class="section-title-wrapper reveal">
+                <span class="section-stamp-bg">BOOK</span>
+                <h2 class="section-title">Phiếu Đặt Bàn Tiệc</h2>
+            </div>
+            
+            <div class="booking-form-wrapper reveal" style="max-width: 650px;">
+                <p style="text-align: center; color: var(--color-text-muted); margin-bottom: 20px; font-size: 14px;">Quý khách vui lòng điền các thông tin dưới đây. Totoro sẽ tiếp nhận và gọi xác nhận ngay trong ít phút.</p>
+                
+                <form class="totoro-booking-form">
+                    <div class="booking-form-group">
+                        <label class="booking-form-label">Họ và tên của bạn *</label>
+                        <input type="text" name="fullname" class="form-control" placeholder="Ví dụ: Nguyễn Văn C" required />
+                    </div>
+                    <div class="booking-form-group">
+                        <label class="booking-form-label">Số điện thoại liên hệ *</label>
+                        <input type="tel" name="phone" class="form-control" placeholder="Ví dụ: 0963979859" required />
+                    </div>
+                    <div class="booking-form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div>
+                            <label class="booking-form-label">Ngày đặt *</label>
+                            <input type="date" name="date" class="form-control" required />
+                        </div>
+                        <div>
+                            <label class="booking-form-label">Giờ đặt dùng bữa *</label>
+                            <select name="time" class="form-control" required>
+                                <option value="">Chọn giờ</option>
+                                <option value="11:00">Trưa: 11:00</option>
+                                <option value="12:00">Trưa: 12:00</option>
+                                <option value="13:00">Trưa: 13:00</option>
+                                <option value="17:00">Chiều: 17:00</option>
+                                <option value="18:00">Chiều: 18:00</option>
+                                <option value="19:00">Tối: 19:00</option>
+                                <option value="20:00">Tối: 20:00</option>
+                                <option value="21:00">Tối: 21:00</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="booking-form-group" style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                        <div>
+                            <label class="booking-form-label">Số khách người lớn *</label>
+                            <select name="adults" class="form-control" required>
+                                <option value="1">1 người</option>
+                                <option value="2" selected>2 người</option>
+                                <option value="3">3 người</option>
+                                <option value="4">4 người</option>
+                                <option value="5">5 người</option>
+                                <option value="6">6 người</option>
+                                <option value="8">8 người</option>
+                                <option value="10">Đoàn 10+ người</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="booking-form-label">Số khách trẻ em</label>
+                            <select name="kids" class="form-control">
+                                <option value="0">Không có</option>
+                                <option value="1">1 bé</option>
+                                <option value="2">2 bé</option>
+                                <option value="3">Hơn 3 bé</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="booking-form-group">
+                        <label class="booking-form-label">Yêu cầu đặc biệt (Ghi chú)</label>
+                        <textarea name="notes" class="form-control" style="min-height: 100px;" placeholder="Ví dụ: Bàn gần cửa sổ, ghế riêng cho trẻ nhỏ, trang trí bánh sinh nhật..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%; padding: 14px;">🛎️ Đăng Ký Đặt Bàn Ngay</button>
+                </form>
+            </div>
+        </section>
+
+        <!-- 3. FREQUENTLY ASKED QUESTIONS (FAQ) -->
+        <section class="section-padding" style="border-top: 1px solid var(--color-border);">
+            <div class="section-title-wrapper reveal">
+                <span class="section-stamp-bg">FAQ</span>
+                <h2 class="section-title">Câu Hỏi Thường Gặp</h2>
+            </div>
+            
+            <div class="faq-list reveal" style="max-width: 750px; margin: 0 auto;">
+                
+                <div class="faq-item">
+                    <div class="faq-question">Nhà hàng Totoro phục vụ buffet hay gọi món?</div>
+                    <div class="faq-answer">Totoro phục vụ cả hai hình thức: Gọi món lẻ (Alacarte) nướng và sushi hoặc các Set Combo nướng lẩu tiết kiệm thiết kế riêng cho nhóm bạn, gia đình. Bạn có thể tự chọn tại bể kính và yêu cầu đầu bếp chế biến trực tiếp.</div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">Nếu tôi đặt bàn trước qua Website thì có được áp dụng giảm giá không?</div>
+                    <div class="faq-answer">Có. Tất cả các khách hàng đặt bàn giữ chỗ trước tối thiểu 2 giờ qua Website đều được áp dụng ưu đãi giảm ngay 10% trên tổng hóa đơn thức ăn khi đến dùng tiệc tại nhà hàng.</div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">Nhà hàng có hỗ trợ trang trí tiệc sinh nhật không?</div>
+                    <div class="faq-answer">Totoro hỗ trợ miễn phí dịch vụ trang trí không gian bàn tiệc sinh nhật (bóng bay, bảng tên) và tặng thêm 1 phần bánh ngọt tráng miệng đặc biệt từ đầu bếp khi quý khách thông báo đặt tiệc trước.</div>
+                </div>
+
+                <div class="faq-item">
+                    <div class="faq-question">Nhà hàng có bãi đậu xe ô tô không?</div>
+                    <div class="faq-answer">Có. Phía trước cửa nhà hàng Totoro tại 51 Châu Thị Vĩnh Tế có bãi đỗ xe máy rộng rãi, đồng thời có vị trí đậu ô tô an toàn, có nhân viên bảo vệ trông coi và hướng dẫn đỗ xe miễn phí cho thực khách.</div>
+                </div>
+
+            </div>
+        </section>
+
+    </main>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+        <div class="container footer-grid">
+            <div class="footer-about">
+                <a href="index.html" class="logo">
+                    <span class="logo-stamp">TOTORO</span>
+                    <span style="color: var(--color-gold);">NƯỚNG & SUSHI</span>
+                </a>
+                <p>Nhà hàng ẩm thực Nhật Bản hiện đại, năng động dành cho giới trẻ tại Đà Nẵng. Nơi sum họp bè bạn, chia sẻ niềm vui bên bàn tiệc nướng nghi ngút khói và những miếng sushi tươi mọng.</p>
+                <div class="social-icons">
+                    <a href="https://www.facebook.com/MoriSushiDaNang" class="social-icon" target="_blank" rel="noopener noreferrer">
+                        <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 2C6.477 2 2 6.477 2 12c0 4.991 3.657 9.128 8.438 9.879V14.89h-2.54V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.989C18.343 21.129 22 16.99 22 12c0-5.523-4.477-10-10-10z"/></svg>
+                    </a>
+                </div>
+            </div>
+            
+            <div class="footer-links">
+                <h4>Liên Kết Nhanh</h4>
+                <ul>
+                    <li><a href="index.html">Trang Chủ</a></li>
+                    <li><a href="ve-totoro.html">Về Totoro</a></li>
+                    <li><a href="menu.html">Thực Đơn</a></li>
+                    <li><a href="dat-mon.html">Đặt Món Online</a></li>
+                    <li><a href="tin-tuc.html">Khuyến Mãi</a></li>
+                    <li><a href="lien-he.html">Liên Hệ</a></li>
+                </ul>
+            </div>
+            
+            <div class="footer-contact">
+                <h4>Thông Tin</h4>
+                <p>📍 <strong>Địa chỉ:</strong> 51 Châu Thị Vĩnh Tế, phường Mỹ An, quận Ngũ Hành Sơn, Đà Nẵng</p>
+                <p>📞 <strong>Hotline:</strong> 0963 979 859 (Zalo)</p>
+                <p>✉️ <strong>Email:</strong> contact@totorosushi.vn</p>
+                <p>⏰ <strong>Giờ mở cửa:</strong> 10:30 - 22:30 (Mỗi ngày)</p>
+            </div>
+            
+            <div class="footer-map">
+                <h4>Bản Đồ</h4>
+                <iframe 
+                    src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3834.425867160759!2d108.23806287490333!3d16.043444888899896!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31421764eb806c99%3A0xc47e335272a27546!2zNTEgQ2jDonUgVGjhu4sgVsSpbmggVOG6eb8sIE3hu7kgQW4sIE5nxakgSMOgbmggU8ahbiwgRMOgIE7hurVuZyA1NTAwMDAsIFZp4buHdCBOYW0!5e0!3m2!1svi!2svn!4v1700000000000!5m2!1svi!2svn" 
+                    width="100%" 
+                    height="130" 
+                    style="border:0;" 
+                    allowfullscreen="" 
+                    loading="lazy" 
+                    referrerpolicy="no-referrer-when-downgrade">
+                </iframe>
+            </div>
+        </div>
+        
+        <div class="container footer-bottom">
+            <p>&copy; 2026 Totoro Nướng & Sushi Đà Nẵng. Bảo lưu mọi quyền.</p>
+            <div class="footer-policies">
+                <a href="#">Chính sách giao hàng</a>
+                <a href="#">Thanh toán</a>
+                <a href="#">Bảo mật</a>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Script assets -->
+    <script src="assets/js/main.js"></script>
+    <script src="assets/js/cart.js"></script>
+    <script src="assets/js/booking.js"></script>
+</body>
+</html>
