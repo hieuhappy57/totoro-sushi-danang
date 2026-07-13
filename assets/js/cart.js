@@ -337,6 +337,34 @@ function initCartPage() {
             const discount = promoCodeApplied ? Math.round(subtotal * 0.1) : 0;
             const total = subtotal + shippingFee - discount;
 
+            // SAVE ORDER TO LOCALSTORAGE for CMS Page
+            const orderData = {
+                id: orderCode,
+                name: nameVal,
+                phone: phoneVal,
+                time: timeVal,
+                payment: paymentLabel,
+                shippingMethod: shippingMethod,
+                address: shippingMethod === 'delivery' ? document.getElementById('shipping-address').value : 'Nhận tại cửa hàng',
+                notes: document.getElementById('shipping-notes').value || '',
+                items: cart,
+                subtotal: subtotal,
+                shippingFee: shippingFee,
+                discount: discount,
+                total: total,
+                status: 'Chờ xác nhận',
+                createdAt: new Date().toISOString()
+            };
+
+            let orders = [];
+            try {
+                orders = JSON.parse(localStorage.getItem('totoro_orders') || '[]');
+            } catch (e) {
+                orders = [];
+            }
+            orders.unshift(orderData);
+            localStorage.setItem('totoro_orders', JSON.stringify(orders));
+
             document.getElementById('display-order-total').textContent = total.toLocaleString('vi-VN') + 'đ';
 
             // Perform transition

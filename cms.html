@@ -1,0 +1,938 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hệ Thống Quản Trị Totoro CMS | Totoro Nướng & Lẩu</title>
+    
+    <!-- Meta SEO (noindex) -->
+    <meta name="robots" content="noindex, nofollow">
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚙️</text></svg>">
+
+    <!-- CSS stylesheets -->
+    <link rel="stylesheet" href="assets/css/variables.css">
+    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/css/pages.css">
+
+    <style>
+        /* Special layout tweaks for CMS dashboard */
+        .cms-container {
+            display: grid;
+            grid-template-columns: 240px 1fr;
+            gap: 25px;
+            margin-top: 30px;
+            margin-bottom: 60px;
+        }
+
+        @media (max-width: 992px) {
+            .cms-container {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Sidebar Navigation */
+        .cms-sidebar {
+            background-color: var(--color-white);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--color-border);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            height: fit-content;
+        }
+
+        .cms-tab-btn {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px 16px;
+            border-radius: var(--radius-sm);
+            border: none;
+            background: none;
+            color: var(--color-text-dark);
+            font-weight: 700;
+            font-family: var(--font-heading);
+            font-size: var(--font-size-sm);
+            cursor: pointer;
+            text-align: left;
+            transition: var(--transition-smooth);
+        }
+
+        .cms-tab-btn:hover {
+            background-color: var(--color-bg);
+            color: var(--color-primary);
+        }
+
+        .cms-tab-btn.active {
+            background-color: var(--color-primary);
+            color: var(--color-white);
+        }
+
+        /* Stat Cards */
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            gap: 20px;
+            margin-bottom: 25px;
+        }
+
+        .stat-card {
+            background-color: var(--color-white);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--color-border);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .stat-value {
+            font-size: 28px;
+            font-weight: 900;
+            font-family: var(--font-heading);
+            color: var(--color-secondary);
+        }
+
+        .stat-label {
+            font-size: 13px;
+            color: var(--color-text-muted);
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        /* CMS Panels */
+        .cms-panel {
+            background-color: var(--color-white);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--color-border);
+            padding: 25px;
+            box-shadow: var(--shadow-sm);
+            display: none;
+        }
+
+        .cms-panel.active {
+            display: block;
+        }
+
+        /* Tables styling */
+        .cms-table-wrapper {
+            overflow-x: auto;
+            margin-top: 15px;
+        }
+
+        .cms-table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .cms-table th {
+            padding: 12px 15px;
+            background-color: var(--color-bg);
+            font-weight: 800;
+            color: var(--color-secondary);
+            border-bottom: 2px solid var(--color-border);
+            text-transform: uppercase;
+            font-size: 12px;
+            letter-spacing: 0.5px;
+        }
+
+        .cms-table td {
+            padding: 15px;
+            border-bottom: 1px solid var(--color-border);
+            vertical-align: middle;
+        }
+
+        .cms-table tr:hover {
+            background-color: rgba(19, 19, 26, 0.01);
+        }
+
+        /* Badges */
+        .status-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 800;
+            text-transform: uppercase;
+        }
+
+        .badge-pending { background-color: #FEF3C7; color: #D97706; } /* Yellow */
+        .badge-processing { background-color: #DBEAFE; color: #2563EB; } /* Blue */
+        .badge-shipping { background-color: #E0F2FE; color: #0284C7; } /* Cyan */
+        .badge-success { background-color: #D1FAE5; color: #059669; } /* Green */
+        .badge-cancel { background-color: #FEE2E2; color: #DC2626; } /* Red */
+
+        /* CMS Action Buttons */
+        .cms-btn-group {
+            display: flex;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .cms-action-btn {
+            padding: 6px 12px;
+            font-size: 11px;
+            font-weight: 800;
+            border-radius: var(--radius-sm);
+            border: 1px solid var(--color-border);
+            background-color: var(--color-white);
+            cursor: pointer;
+            transition: var(--transition-smooth);
+        }
+
+        .cms-action-btn:hover {
+            border-color: var(--color-secondary);
+            background-color: var(--color-bg);
+        }
+
+        .cms-action-btn-primary {
+            background-color: var(--color-primary);
+            color: var(--color-white);
+            border-color: var(--color-primary);
+        }
+
+        .cms-action-btn-primary:hover {
+            background-color: var(--color-secondary);
+            border-color: var(--color-secondary);
+        }
+
+        /* Thumbnail sizes */
+        .menu-thumb {
+            width: 48px;
+            height: 48px;
+            border-radius: var(--radius-sm);
+            object-fit: cover;
+            border: 1px solid var(--color-border);
+        }
+    </style>
+</head>
+<body class="bg-wave-pattern">
+
+    <!-- HEADER / NAVIGATION -->
+    <header class="header">
+        <div class="container nav-container">
+            <a href="index.html" class="logo">
+                <span class="logo-stamp">TOTORO</span>
+                <span style="font-family: var(--font-heading); font-weight: 900; letter-spacing: 0.5px;">CMS ADMIN</span>
+            </a>
+            
+            <nav class="nav-menu">
+                <a href="index.html" class="nav-link">Trang Chủ</a>
+                <a href="menu.html" class="nav-link">Thực Đơn</a>
+                <a href="dat-mon.html" class="nav-link">Đặt Món</a>
+                <a href="lien-he.html" class="nav-link">Đặt Bàn</a>
+                <a href="cms.html" class="nav-link active">Hệ Thống CMS</a>
+            </nav>
+            
+            <div class="nav-actions">
+                <button type="button" class="btn btn-outline" id="btn-seed-data" style="font-size: 12px; padding: 8px 16px;">⚡ Nạp Dữ Liệu Mẫu</button>
+            </div>
+        </div>
+    </header>
+
+    <!-- MAIN APP WRAPPER -->
+    <main class="container">
+        
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 30px; flex-wrap: wrap; gap: 15px;">
+            <div>
+                <h1 style="font-family: var(--font-heading); font-weight: 900; font-size: var(--font-size-lg); color: var(--color-secondary);">⚙️ HỆ THỐNG QUẢN TRỊ CMS</h1>
+                <p style="color: var(--color-text-muted); font-size: 13px;">Quản lý thời gian thực đơn hàng, lịch đặt bàn và danh mục thực đơn của quán.</p>
+            </div>
+            <div>
+                <button type="button" class="btn btn-primary" onclick="window.location.href='menu.html'">🗂️ Mở Xem Website</button>
+            </div>
+        </div>
+
+        <!-- STATISTICS GRID ROW -->
+        <div class="stats-grid" style="margin-top: 25px;">
+            <div class="stat-card">
+                <span class="stat-label">Doanh Thu Ước Tính</span>
+                <span class="stat-value" id="stat-revenue">0đ</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Đơn Đặt Món</span>
+                <span class="stat-value" id="stat-orders-count">0 Đơn</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Lịch Đặt Bàn</span>
+                <span class="stat-value" id="stat-bookings-count">0 Lịch</span>
+            </div>
+            <div class="stat-card">
+                <span class="stat-label">Tổng Món Thực Đơn</span>
+                <span class="stat-value" id="stat-menu-count">0 Món</span>
+            </div>
+        </div>
+
+        <!-- CMS TWO COLUMN CONTENT -->
+        <div class="cms-container">
+            
+            <!-- Left Sidebar Navigation tabs -->
+            <div class="cms-sidebar">
+                <button class="cms-tab-btn active" data-tab="tab-orders">📦 Quản Lý Đơn Hàng</button>
+                <button class="cms-tab-btn" data-tab="tab-bookings">🛎️ Lịch Đặt Bàn</button>
+                <button class="cms-tab-btn" data-tab="tab-menu">🗂️ Chỉnh Sửa Thực Đơn</button>
+                <button class="cms-tab-btn" id="btn-reset-simulator" style="margin-top: auto; color: var(--color-red);">⚠️ Reset Toàn Bộ</button>
+            </div>
+
+            <!-- Right Tab Contents -->
+            <div class="cms-content-area">
+                
+                <!-- TAB 1: ORDER MANAGEMENT -->
+                <div class="cms-panel active" id="tab-orders">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 12px; margin-bottom: 15px;">
+                        <h2 style="font-size: 18px; font-family: var(--font-heading); color: var(--color-secondary);">📦 Danh Sách Đơn Đặt Món Online</h2>
+                        <span style="font-size: 12px; color: var(--color-text-muted);" id="orders-summary-label">Hiển thị 0 đơn hàng</span>
+                    </div>
+
+                    <div class="cms-table-wrapper">
+                        <table class="cms-table">
+                            <thead>
+                                <tr>
+                                    <th>Mã Đơn</th>
+                                    <th>Khách Hàng</th>
+                                    <th>Thời Gian Nhận</th>
+                                    <th>Tổng Tiền</th>
+                                    <th>Trạng Thái</th>
+                                    <th>Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cms-orders-tbody">
+                                <!-- Loaded dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TAB 2: BOOKING RESERVATION MANAGEMENT -->
+                <div class="cms-panel" id="tab-bookings">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 12px; margin-bottom: 15px;">
+                        <h2 style="font-size: 18px; font-family: var(--font-heading); color: var(--color-secondary);">🛎️ Danh Sách Lịch Đặt Bàn Ăn</h2>
+                        <span style="font-size: 12px; color: var(--color-text-muted);" id="bookings-summary-label">Hiển thị 0 lịch đặt</span>
+                    </div>
+
+                    <div class="cms-table-wrapper">
+                        <table class="cms-table">
+                            <thead>
+                                <tr>
+                                    <th>Mã Lịch</th>
+                                    <th>Khách Hàng</th>
+                                    <th>Số Điện Thoại</th>
+                                    <th>Ngày / Giờ Đặt</th>
+                                    <th>Khách</th>
+                                    <th>Trạng Thái</th>
+                                    <th>Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cms-bookings-tbody">
+                                <!-- Loaded dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+                <!-- TAB 3: MENU ITEMS CONTENT CRUD -->
+                <div class="cms-panel" id="tab-menu">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--color-border); padding-bottom: 12px; margin-bottom: 15px; flex-wrap: wrap; gap: 10px;">
+                        <div>
+                            <h2 style="font-size: 18px; font-family: var(--font-heading); color: var(--color-secondary);">🗂️ Danh Sách Thực Đơn Gốc</h2>
+                            <p style="font-size: 11px; color: var(--color-text-muted); margin-top: 2px;">Chỉnh sửa hoặc xóa các món ăn để hiển thị trực tiếp trên trang Thực Đơn.</p>
+                        </div>
+                        <button type="button" class="btn btn-primary" id="btn-add-product" style="padding: 8px 16px; font-size: 12px;">✚ Thêm Món Mới</button>
+                    </div>
+
+                    <div class="cms-table-wrapper">
+                        <table class="cms-table">
+                            <thead>
+                                <tr>
+                                    <th>Ảnh</th>
+                                    <th>Tên Món</th>
+                                    <th>Danh Mục</th>
+                                    <th>Đơn Giá</th>
+                                    <th>Ghi Chú</th>
+                                    <th>Thao Tác</th>
+                                </tr>
+                            </thead>
+                            <tbody id="cms-menu-tbody">
+                                <!-- Loaded dynamically -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+
+    </main>
+
+    <!-- PRODUCT ADD / EDIT MODAL -->
+    <div class="modal" id="cms-product-modal">
+        <div class="modal-content" style="max-width: 600px; padding: 25px;">
+            <div class="modal-close-btn" id="close-product-modal-btn">✕</div>
+            <h2 id="product-modal-title" style="font-family: var(--font-heading); font-weight: 900; color: var(--color-primary); margin-bottom: 20px; border-bottom: 2px solid var(--color-border); padding-bottom: 8px;">Thêm Món Ăn Mới</h2>
+            
+            <form id="product-modal-form">
+                <input type="hidden" id="modal-product-id" />
+                
+                <div class="booking-form-group">
+                    <label class="booking-form-label">Tên món ăn *</label>
+                    <input type="text" id="modal-product-name" class="form-control" placeholder="Ví dụ: Bò Nướng Đế Vương" required />
+                </div>
+                
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                    <div class="booking-form-group">
+                        <label class="booking-form-label">Đơn giá (đ) *</label>
+                        <input type="number" id="modal-product-price" class="form-control" placeholder="Ví dụ: 124000" required />
+                    </div>
+                    
+                    <div class="booking-form-group">
+                        <label class="booking-form-label">Danh mục thực đơn *</label>
+                        <select id="modal-product-category" class="form-control" required>
+                            <option value="nuong">Thịt Nướng</option>
+                            <option value="haisan">Hải Sản Nướng</option>
+                            <option value="lau">Lẩu Hai Ngăn</option>
+                            <option value="combo">Set Combo</option>
+                            <option value="khai-vi">Món Khai Vị</option>
+                            <option value="salad">Món Ăn Kèm</option>
+                            <option value="nong">Cơm & Mỳ</option>
+                            <option value="drink">Đồ Uống</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="booking-form-group">
+                    <label class="booking-form-label">Link ảnh món ăn (URL)</label>
+                    <input type="url" id="modal-product-image" class="form-control" placeholder="Nhập đường dẫn ảnh từ internet (hoặc để trống dùng ảnh mặc định)" />
+                </div>
+
+                <div class="booking-form-group">
+                    <label class="booking-form-label">Mô tả món ăn *</label>
+                    <textarea id="modal-product-desc" class="form-control" style="min-height: 80px;" placeholder="Mô tả thành phần, độ ngon của món ăn..." required></textarea>
+                </div>
+
+                <div style="margin: 15px 0;">
+                    <span class="booking-form-label" style="display:block; margin-bottom: 8px;">Thuộc tính món ăn:</span>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+                            <input type="checkbox" id="modal-prop-spicy" style="accent-color: var(--color-primary);" />
+                            🌶️ Vị Cay sa tế
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+                            <input type="checkbox" id="modal-prop-cooked" checked style="accent-color: var(--color-primary);" />
+                            🍳 Món Chín hoàn toàn
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+                            <input type="checkbox" id="modal-prop-raw" style="accent-color: var(--color-primary);" />
+                            🍣 Món Ăn Sống (Sashimi)
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+                            <input type="checkbox" id="modal-prop-child" style="accent-color: var(--color-primary);" />
+                            👶 Phù hợp Trẻ Em
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+                            <input type="checkbox" id="modal-prop-bestseller" style="accent-color: var(--color-primary);" />
+                            ⭐ Nhãn Bán Chạy (Best Seller)
+                        </label>
+                        <label style="display: flex; align-items: center; gap: 8px; cursor: pointer; font-size: 13px;">
+                            <input type="checkbox" id="modal-prop-new" style="accent-color: var(--color-primary);" />
+                            ✨ Nhãn Món Mới (New)
+                        </label>
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px; margin-top: 25px;">
+                    <button type="button" class="btn btn-outline" id="btn-cancel-product-modal" style="flex: 1;">Hủy Bỏ</button>
+                    <button type="submit" class="btn btn-primary" style="flex: 2;">🖨️ Lưu Món Ăn</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Script assets -->
+    <script src="assets/js/main.js"></script>
+    
+    <!-- Fallback dummy data structure if menu-filter database defaults are needed -->
+    <script src="assets/js/menu-filter.js"></script>
+    
+    <script>
+        // CMS Operations Panel Logic
+        document.addEventListener('DOMContentLoaded', function() {
+            initCmsTabs();
+            initCmsData();
+            setupCmsProductModal();
+        });
+
+        // Tab switches logic
+        function initCmsTabs() {
+            const tabs = document.querySelectorAll('.cms-tab-btn[data-tab]');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+
+                    const targetTabId = this.getAttribute('data-tab');
+                    const panels = document.querySelectorAll('.cms-panel');
+                    panels.forEach(panel => {
+                        panel.classList.remove('active');
+                        if (panel.id === targetTabId) {
+                            panel.classList.add('active');
+                        }
+                    });
+                });
+            });
+        }
+
+        // Initialize orders, bookings, and menu lists
+        function initCmsData() {
+            refreshCmsOrders();
+            refreshCmsBookings();
+            refreshCmsMenuTable();
+            updateStatistics();
+
+            // Seed Data Trigger
+            document.getElementById('btn-seed-data').addEventListener('click', seedMockData);
+            
+            // Clear Data Trigger
+            document.getElementById('btn-reset-simulator').addEventListener('click', function() {
+                if (confirm('Cảnh báo! Bạn có chắc chắn muốn xóa toàn bộ lịch đặt bàn, đơn hàng và danh mục món ăn đã tùy chỉnh về mặc định ban đầu không?')) {
+                    localStorage.removeItem('totoro_orders');
+                    localStorage.removeItem('totoro_bookings');
+                    localStorage.removeItem('totoro_menu');
+                    
+                    // Reload default items array
+                    if (typeof DEFAULT_MENU_ITEMS !== 'undefined') {
+                        localStorage.setItem('totoro_menu', JSON.stringify(DEFAULT_MENU_ITEMS));
+                    }
+                    
+                    showAlert('Đặt lại toàn bộ trạng thái mô phỏng thành công!');
+                    setTimeout(() => window.location.reload(), 800);
+                }
+            });
+        }
+
+        // Seed realistic mock orders and bookings
+        function seedMockData() {
+            const mockBookings = [
+                {
+                    id: 'BK-4829',
+                    name: 'Trần Thị Mỹ Linh',
+                    phone: '0935123456',
+                    date: getOffsetDateString(0), // Today
+                    time: '18:00',
+                    adults: 4,
+                    kids: 2,
+                    notes: 'Bàn ngồi tầng 2 gần ban công ngắm gió biển.',
+                    status: 'Đã xác nhận',
+                    createdAt: new Date(Date.now() - 3600000).toISOString()
+                },
+                {
+                    id: 'BK-9182',
+                    name: 'Nguyễn Duy Hải',
+                    phone: '0905888999',
+                    date: getOffsetDateString(1), // Tomorrow
+                    time: '19:00',
+                    adults: 8,
+                    kids: 0,
+                    notes: 'Họp lớp cũ, mang theo bánh kem sinh nhật.',
+                    status: 'Chờ xác nhận',
+                    createdAt: new Date(Date.now() - 7200000).toISOString()
+                }
+            ];
+
+            const mockOrders = [
+                {
+                    id: 'TT-739218',
+                    name: 'Phạm Minh Quân',
+                    phone: '0977223344',
+                    time: 'Nhận sớm nhất',
+                    payment: 'Trả sau khi nhận hàng (COD)',
+                    shippingMethod: 'delivery',
+                    address: '15 Lê Quang Đạo, Mỹ An, Ngũ Hành Sơn',
+                    notes: 'Lấy đầy đủ gia vị nướng, không hành tỏi tây.',
+                    items: [
+                        { name: 'Chảo Bò Kobe Sốt BBQ', price: 147000, quantity: 1 },
+                        { name: 'Nầm Heo Cháy Tỏi', price: 126000, quantity: 1 },
+                        { name: 'Nước Gạo Rang Woongjin Korea', price: 34000, quantity: 2 }
+                    ],
+                    subtotal: 341000,
+                    shippingFee: 20000,
+                    discount: 34100, // 10%
+                    total: 326900,
+                    status: 'Đang chuẩn bị',
+                    createdAt: new Date(Date.now() - 1800000).toISOString()
+                },
+                {
+                    id: 'TT-551230',
+                    name: 'Hoàng Thùy Dương',
+                    phone: '0355446677',
+                    time: '19:30',
+                    payment: 'Chuyển khoản Ngân hàng',
+                    shippingMethod: 'pickup',
+                    address: 'Nhận tại cửa hàng',
+                    notes: 'Báo nhà bếp chuẩn bị sớm trước khi em tới lấy.',
+                    items: [
+                        { name: 'Combo Siêu Ấm Áp Lẩu Nướng', price: 542000, quantity: 1 }
+                    ],
+                    subtotal: 542000,
+                    shippingFee: 0,
+                    discount: 0,
+                    total: 542000,
+                    status: 'Chờ xác nhận',
+                    createdAt: new Date(Date.now() - 900000).toISOString()
+                }
+            ];
+
+            localStorage.setItem('totoro_bookings', JSON.stringify(mockBookings));
+            localStorage.setItem('totoro_orders', JSON.stringify(mockOrders));
+
+            showAlert('Đã nạp 2 Đơn hàng và 2 Lịch đặt bàn mẫu thành công!');
+            setTimeout(() => window.location.reload(), 800);
+        }
+
+        // Helper to offset date YYYY-MM-DD
+        function getOffsetDateString(daysOffset) {
+            const d = new Date();
+            d.setDate(d.getDate() + daysOffset);
+            const yyyy = d.getFullYear();
+            let mm = d.getMonth() + 1;
+            let dd = d.getDate();
+            if (mm < 10) mm = '0' + mm;
+            if (dd < 10) dd = '0' + dd;
+            return `${yyyy}-${mm}-${dd}`;
+        }
+
+        // Calculate and show dashboard summary numbers
+        function updateStatistics() {
+            let orders = JSON.parse(localStorage.getItem('totoro_orders') || '[]');
+            let bookings = JSON.parse(localStorage.getItem('totoro_bookings') || '[]');
+            let menu = JSON.parse(localStorage.getItem('totoro_menu') || '[]');
+
+            // Revenue: Sum total of orders except Cancelled orders
+            const revenue = orders
+                .filter(o => o.status !== 'Đã hủy')
+                .reduce((sum, o) => sum + o.total, 0);
+
+            document.getElementById('stat-revenue').textContent = revenue.toLocaleString('vi-VN') + 'đ';
+            document.getElementById('stat-orders-count').textContent = orders.length + ' Đơn';
+            document.getElementById('stat-bookings-count').textContent = bookings.length + ' Lịch';
+            document.getElementById('stat-menu-count').textContent = menu.length + ' Món';
+        }
+
+        // 1. ORDERS MANAGER TABLE
+        function refreshCmsOrders() {
+            const tbody = document.getElementById('cms-orders-tbody');
+            if (!tbody) return;
+
+            let orders = JSON.parse(localStorage.getItem('totoro_orders') || '[]');
+            document.getElementById('orders-summary-label').textContent = `Hiển thị ${orders.length} đơn hàng`;
+
+            if (orders.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--color-text-muted); padding: 30px 0;">Chưa có đơn đặt món nào trực tuyến.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = orders.map(o => {
+                let badgeClass = 'badge-pending';
+                if (o.status === 'Đang chuẩn bị') badgeClass = 'badge-processing';
+                else if (o.status === 'Đang giao') badgeClass = 'badge-shipping';
+                else if (o.status === 'Đã hoàn thành') badgeClass = 'badge-success';
+                else if (o.status === 'Đã hủy') badgeClass = 'badge-cancel';
+
+                const itemsList = o.items.map(item => `${item.name} (${item.quantity})`).join(', ');
+
+                return `
+                    <tr>
+                        <td>
+                            <strong style="color: var(--color-primary);">${o.id}</strong>
+                            <div style="font-size: 10px; color: var(--color-text-muted); margin-top: 4px;">HT: ${o.payment}</div>
+                        </td>
+                        <td>
+                            <strong>${o.name}</strong>
+                            <div style="font-size: 11px; color: var(--color-text-muted); margin-top: 2px;">📞 ${o.phone}</div>
+                            <div style="font-size: 11px; color: var(--color-text-dark); margin-top: 4px; font-style: italic;">🏠 Giao: ${o.address}</div>
+                        </td>
+                        <td>${o.time}</td>
+                        <td>
+                            <strong style="color: var(--color-secondary);">${o.total.toLocaleString('vi-VN')}đ</strong>
+                            <div style="font-size: 10px; color: var(--color-text-muted); margin-top: 2px;">Món: ${itemsList}</div>
+                        </td>
+                        <td><span class="status-badge ${badgeClass}">${o.status}</span></td>
+                        <td>
+                            <div class="cms-btn-group">
+                                ${o.status === 'Chờ xác nhận' ? `<button class="cms-action-btn cms-action-btn-primary" onclick="updateOrderStatus('${o.id}', 'Đang chuẩn bị')">Duyệt</button>` : ''}
+                                ${o.status === 'Đang chuẩn bị' ? `<button class="cms-action-btn cms-action-btn-primary" onclick="updateOrderStatus('${o.id}', 'Đang giao')">Giao Hàng</button>` : ''}
+                                ${o.status === 'Đang giao' ? `<button class="cms-action-btn cms-action-btn-primary" onclick="updateOrderStatus('${o.id}', 'Đã hoàn thành')">Hoàn Thành</button>` : ''}
+                                ${o.status !== 'Đã hoàn thành' && o.status !== 'Đã hủy' ? `<button class="cms-action-btn" onclick="updateOrderStatus('${o.id}', 'Đã hủy')" style="color: var(--color-red);">Hủy</button>` : ''}
+                                ${o.status === 'Đã hoàn thành' || o.status === 'Đã hủy' ? `<span style="font-size: 11px; color: var(--color-text-muted); font-style: italic;">Đã chốt</span>` : ''}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        window.updateOrderStatus = function(orderId, newStatus) {
+            let orders = JSON.parse(localStorage.getItem('totoro_orders') || '[]');
+            const index = orders.findIndex(o => o.id === orderId);
+            if (index !== -1) {
+                orders[index].status = newStatus;
+                localStorage.setItem('totoro_orders', JSON.stringify(orders));
+                showAlert(`Đã cập nhật trạng thái đơn ${orderId} thành "${newStatus}"!`);
+                refreshCmsOrders();
+                updateStatistics();
+            }
+        };
+
+        // 2. BOOKINGS RESERVATIONS MANAGER TABLE
+        function refreshCmsBookings() {
+            const tbody = document.getElementById('cms-bookings-tbody');
+            if (!tbody) return;
+
+            let bookings = JSON.parse(localStorage.getItem('totoro_bookings') || '[]');
+            document.getElementById('bookings-summary-label').textContent = `Hiển thị ${bookings.length} lịch đặt`;
+
+            if (bookings.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--color-text-muted); padding: 30px 0;">Chưa có lịch đặt bàn nào.</td></tr>`;
+                return;
+            }
+
+            tbody.innerHTML = bookings.map(b => {
+                let badgeClass = 'badge-pending';
+                if (b.status === 'Đã xác nhận') badgeClass = 'badge-success';
+                else if (b.status === 'Đã hủy') badgeClass = 'badge-cancel';
+
+                const dateParts = b.date.split('-');
+                const formattedDate = dateParts.length === 3 ? `${dateParts[2]}/${dateParts[1]}/${dateParts[0]}` : b.date;
+
+                return `
+                    <tr>
+                        <td><strong style="color: var(--color-primary);">${b.id}</strong></td>
+                        <td>
+                            <strong>${b.name}</strong>
+                            ${b.notes ? `<div style="font-size: 11px; color: var(--color-text-muted); margin-top: 4px; font-style: italic;">📝 Ghi chú: ${b.notes}</div>` : ''}
+                        </td>
+                        <td>${b.phone}</td>
+                        <td>
+                            <strong>${formattedDate}</strong>
+                            <div style="font-size: 11px; color: var(--color-text-muted); margin-top: 2px;">⏰ ${b.time}</div>
+                        </td>
+                        <td>${b.adults} Lớn, ${b.kids} Bé</td>
+                        <td><span class="status-badge ${badgeClass}">${b.status}</span></td>
+                        <td>
+                            <div class="cms-btn-group">
+                                ${b.status === 'Chờ xác nhận' ? `<button class="cms-action-btn cms-action-btn-primary" onclick="updateBookingStatus('${b.id}', 'Đã xác nhận')">Duyệt</button>` : ''}
+                                ${b.status !== 'Đã hủy' ? `<button class="cms-action-btn" onclick="updateBookingStatus('${b.id}', 'Đã hủy')" style="color: var(--color-red);">Hủy</button>` : ''}
+                                ${b.status === 'Đã hủy' || b.status === 'Đã xác nhận' ? `<span style="font-size: 11px; color: var(--color-text-muted); font-style: italic;">Đã chốt</span>` : ''}
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        window.updateBookingStatus = function(bookingId, newStatus) {
+            let bookings = JSON.parse(localStorage.getItem('totoro_bookings') || '[]');
+            const index = bookings.findIndex(b => b.id === bookingId);
+            if (index !== -1) {
+                bookings[index].status = newStatus;
+                localStorage.setItem('totoro_bookings', JSON.stringify(bookings));
+                showAlert(`Đã cập nhật trạng thái lịch đặt ${bookingId} thành "${newStatus}"!`);
+                refreshCmsBookings();
+                updateStatistics();
+            }
+        };
+
+        // 3. MENU CRUD MANAGER TABLE
+        function refreshCmsMenuTable() {
+            const tbody = document.getElementById('cms-menu-tbody');
+            if (!tbody) return;
+
+            let menu = JSON.parse(localStorage.getItem('totoro_menu') || '[]');
+
+            if (menu.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--color-text-muted); padding: 30px 0;">Không có món ăn nào trong thực đơn.</td></tr>`;
+                return;
+            }
+
+            // Category mapper helper
+            const catMap = {
+                'nuong': 'Thịt Nướng',
+                'haisan': 'Hải Sản Nướng',
+                'lau': 'Lẩu Hai Ngăn',
+                'combo': 'Set Combo',
+                'khai-vi': 'Món Khai Vị',
+                'salad': 'Món Ăn Kèm',
+                'nong': 'Cơm & Mỳ',
+                'drink': 'Đồ Uống'
+            };
+
+            tbody.innerHTML = menu.map(item => {
+                const labels = [];
+                if (item.bestSeller) labels.push(`<span class="status-badge badge-success" style="padding:2px 4px; font-size:9px;">Bán Chạy</span>`);
+                if (item.isNew) labels.push(`<span class="status-badge badge-processing" style="padding:2px 4px; font-size:9px;">Mới</span>`);
+                if (item.spicy) labels.push('🌶️');
+                
+                const categoryLabel = catMap[item.category] || item.category;
+
+                return `
+                    <tr id="cms-row-${item.id}">
+                        <td><img src="${item.image}" alt="" class="menu-thumb" /></td>
+                        <td>
+                            <strong>${item.name}</strong>
+                            <div style="font-size: 11px; color: var(--color-text-muted); margin-top: 3px; max-width: 320px; text-overflow: ellipsis; white-space: nowrap; overflow: hidden;">${item.desc}</div>
+                        </td>
+                        <td><span style="font-size:12px; font-weight:700;">${categoryLabel}</span></td>
+                        <td><strong style="color: var(--color-primary);">${item.price.toLocaleString('vi-VN')}đ</strong></td>
+                        <td>
+                            <div style="display:flex; flex-direction:column; gap:4px;">
+                                ${labels.join(' ')}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="cms-btn-group">
+                                <button class="cms-action-btn" onclick="openEditProductModal('${item.id}')">Sửa</button>
+                                <button class="cms-action-btn" onclick="deleteMenuItem('${item.id}')" style="color: var(--color-red);">Xóa</button>
+                            </div>
+                        </td>
+                    </tr>
+                `;
+            }).join('');
+        }
+
+        // CRUD: Delete Menu Item
+        window.deleteMenuItem = function(id) {
+            if (confirm('Bạn có chắc chắn muốn xóa món này khỏi thực đơn hiển thị không?')) {
+                let menu = JSON.parse(localStorage.getItem('totoro_menu') || '[]');
+                const filtered = menu.filter(item => item.id !== id);
+                localStorage.setItem('totoro_menu', JSON.stringify(filtered));
+                
+                // update local memory array in menu-filter if loaded
+                if (typeof MENU_ITEMS !== 'undefined') {
+                    MENU_ITEMS = filtered;
+                }
+                
+                showAlert('Xóa món ăn thành công!');
+                refreshCmsMenuTable();
+                updateStatistics();
+            }
+        };
+
+        // CRUD: Add & Edit Menu Item Modal Logic
+        function setupCmsProductModal() {
+            const addBtn = document.getElementById('btn-add-product');
+            const closeBtn = document.getElementById('close-product-modal-btn');
+            const cancelBtn = document.getElementById('btn-cancel-product-modal');
+            const modal = document.getElementById('cms-product-modal');
+            const form = document.getElementById('product-modal-form');
+
+            const closeModal = () => modal.classList.remove('open');
+
+            if (addBtn && modal) {
+                addBtn.addEventListener('click', function() {
+                    // Prepare form for Adding Product
+                    document.getElementById('product-modal-title').textContent = 'Thêm Món Ăn Mới';
+                    document.getElementById('modal-product-id').value = '';
+                    form.reset();
+                    modal.classList.add('open');
+                });
+            }
+
+            if (closeBtn && cancelBtn && modal) {
+                closeBtn.addEventListener('click', closeModal);
+                cancelBtn.addEventListener('click', closeModal);
+                modal.addEventListener('click', function(e) {
+                    if (e.target === modal) closeModal();
+                });
+            }
+
+            // Save submit callback
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+
+                    const id = document.getElementById('modal-product-id').value;
+                    const name = document.getElementById('modal-product-name').value.trim();
+                    const price = parseInt(document.getElementById('modal-product-price').value) || 0;
+                    const category = document.getElementById('modal-product-category').value;
+                    const image = document.getElementById('modal-product-image').value.trim() || 'https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=600&auto=format&fit=crop';
+                    const desc = document.getElementById('modal-product-desc').value.trim();
+                    
+                    const spicy = document.getElementById('modal-prop-spicy').checked;
+                    const cooked = document.getElementById('modal-prop-cooked').checked;
+                    const raw = document.getElementById('modal-prop-raw').checked;
+                    const childFriendly = document.getElementById('modal-prop-child').checked;
+                    const bestSeller = document.getElementById('modal-prop-bestseller').checked;
+                    const isNew = document.getElementById('modal-prop-new').checked;
+
+                    let menu = JSON.parse(localStorage.getItem('totoro_menu') || '[]');
+
+                    if (id) {
+                        // Edit Mode
+                        const index = menu.findIndex(item => item.id === id);
+                        if (index !== -1) {
+                            menu[index] = {
+                                id, name, category, price, image, desc,
+                                spicy, cooked, raw, childFriendly, bestSeller, isNew
+                            };
+                            showAlert('Cập nhật món ăn thành công!');
+                        }
+                    } else {
+                        // Add Mode
+                        const newId = 'p-' + Date.now();
+                        const newItem = {
+                            id: newId, name, category, price, image, desc,
+                            spicy, cooked, raw, childFriendly, bestSeller, isNew
+                        };
+                        menu.unshift(newItem);
+                        showAlert('Thêm món ăn mới thành công!');
+                    }
+
+                    localStorage.setItem('totoro_menu', JSON.stringify(menu));
+                    
+                    // Sync array
+                    if (typeof MENU_ITEMS !== 'undefined') {
+                        MENU_ITEMS = menu;
+                    }
+
+                    closeModal();
+                    refreshCmsMenuTable();
+                    updateStatistics();
+                });
+            }
+        }
+
+        // Open modal for editing
+        window.openEditProductModal = function(id) {
+            const modal = document.getElementById('cms-product-modal');
+            const menu = JSON.parse(localStorage.getItem('totoro_menu') || '[]');
+            const item = menu.find(i => i.id === id);
+
+            if (!item || !modal) return;
+
+            document.getElementById('product-modal-title').textContent = 'Chỉnh Sửa Món Ăn';
+            document.getElementById('modal-product-id').value = item.id;
+            document.getElementById('modal-product-name').value = item.name;
+            document.getElementById('modal-product-price').value = item.price;
+            document.getElementById('modal-product-category').value = item.category;
+            document.getElementById('modal-product-image').value = item.image.startsWith('http') ? item.image : '';
+            document.getElementById('modal-product-desc').value = item.desc;
+
+            document.getElementById('modal-prop-spicy').checked = !!item.spicy;
+            document.getElementById('modal-prop-cooked').checked = !!item.cooked;
+            document.getElementById('modal-prop-raw').checked = !!item.raw;
+            document.getElementById('modal-prop-child').checked = !!item.childFriendly;
+            document.getElementById('modal-prop-bestseller').checked = !!item.bestSeller;
+            document.getElementById('modal-prop-new').checked = !!item.isNew;
+
+            modal.classList.add('open');
+        };
+    </script>
+</body>
+</html>

@@ -66,16 +66,31 @@ function initBookingForms() {
 
             // Simulate server network latency (1.5 seconds)
             setTimeout(() => {
-                // Show success modal popup
-                showBookingSuccessModal({
+                const bookingData = {
+                    id: 'BK-' + Math.floor(1000 + Math.random() * 9000),
                     name: name.value.trim(),
                     phone: phone.value.trim(),
                     date: date.value,
                     time: time.value,
-                    adults: adults.value,
-                    kids: kids.value || 0,
-                    notes: notes ? notes.value.trim() : ''
-                });
+                    adults: parseInt(adults.value) || 1,
+                    kids: parseInt(kids.value) || 0,
+                    notes: notes ? notes.value.trim() : '',
+                    status: 'Chờ xác nhận',
+                    createdAt: new Date().toISOString()
+                };
+
+                // Save to localStorage
+                let bookings = [];
+                try {
+                    bookings = JSON.parse(localStorage.getItem('totoro_bookings') || '[]');
+                } catch (err) {
+                    bookings = [];
+                }
+                bookings.unshift(bookingData);
+                localStorage.setItem('totoro_bookings', JSON.stringify(bookings));
+
+                // Show success modal popup
+                showBookingSuccessModal(bookingData);
 
                 // Reset button state
                 submitBtn.disabled = false;

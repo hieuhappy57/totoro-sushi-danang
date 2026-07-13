@@ -4,7 +4,7 @@
  */
 
 // 1. Menu Database (Realistic items with prices & tags)
-const MENU_ITEMS = [
+const DEFAULT_MENU_ITEMS = [
     // --- THỊT NƯỚNG (nuong) ---
     {
         id: "nuong-de-vuong",
@@ -945,6 +945,21 @@ const MENU_ITEMS = [
         isNew: false
     }
 ];
+
+// Initialize dynamic MENU_ITEMS array from LocalStorage
+let MENU_ITEMS = [];
+try {
+    const storedMenu = localStorage.getItem('totoro_menu');
+    if (storedMenu) {
+        MENU_ITEMS = JSON.parse(storedMenu);
+    } else {
+        MENU_ITEMS = [...DEFAULT_MENU_ITEMS];
+        localStorage.setItem('totoro_menu', JSON.stringify(MENU_ITEMS));
+    }
+} catch (err) {
+    console.error("LocalStorage error, fallback to defaults:", err);
+    MENU_ITEMS = [...DEFAULT_MENU_ITEMS];
+}
 
 // 2. DOM Rendering & Filtering Logic
 let selectedProductForModal = null;
