@@ -942,12 +942,10 @@
                     if (!file) return;
 
                     uploadStatus.style.color = 'var(--color-primary)';
-                    uploadStatus.textContent = '⏳ Đang tải ảnh lên Firebase...';
+                    uploadStatus.textContent = '⏳ Đang nén ảnh & tải lên Firebase...';
 
-                    const reader = new FileReader();
-                    reader.onload = function(evt) {
-                        const base64String = evt.target.result;
-                        
+                    // Compress image before upload using Canvas (resizes large photo to max 1000px, quality 0.8)
+                    compressImage(file, 1000, 1000, 0.8, function(base64String) {
                         // Call Vercel Upload API Proxy
                         fetch('/api/upload', {
                             method: 'POST',
@@ -973,8 +971,7 @@
                             uploadStatus.style.color = 'var(--color-red)';
                             uploadStatus.textContent = '✗ Lỗi kết nối API Upload: ' + err.message;
                         });
-                    };
-                    reader.readAsDataURL(file);
+                    });
                 });
             }
 
@@ -1086,6 +1083,44 @@
 
             modal.classList.add('open');
         };
+
+        // Client-side image compression helper using Canvas
+        function compressImage(file, maxWidth, maxHeight, quality, callback) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const img = new Image();
+                img.onload = function() {
+                    let width = img.width;
+                    let height = img.height;
+
+                    // Calculate new size maintaining aspect ratio
+                    if (width > height) {
+                        if (width > maxWidth) {
+                            height *= maxWidth / width;
+                            width = maxWidth;
+                        }
+                    } else {
+                        if (height > maxHeight) {
+                            width *= maxHeight / height;
+                            height = maxHeight;
+                        }
+                    }
+
+                    const canvas = document.createElement('canvas');
+                    canvas.width = width;
+                    canvas.height = height;
+
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(img, 0, 0, width, height);
+
+                    // Output compressed JPEG
+                    const base64String = canvas.toDataURL('image/jpeg', quality);
+                    callback(base64String);
+                };
+                img.src = e.target.result;
+            };
+            reader.readAsDataURL(file);
+        }
     </script>
 </body>
 </html>

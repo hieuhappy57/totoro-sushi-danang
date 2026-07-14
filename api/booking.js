@@ -86,6 +86,10 @@ export default async function handler(req, res) {
             const data = await response.json();
 
             if (!response.ok) {
+                // If collection is empty, Firestore returns 404. Let's return empty array.
+                if (response.status === 404) {
+                    return res.status(200).json([]);
+                }
                 return res.status(response.status).json({ 
                     error: data.error?.message || "Failed to fetch bookings from Firestore." 
                 });
