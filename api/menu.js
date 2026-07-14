@@ -1,11 +1,7 @@
-/**
- * Totoro Sushi & Grill - Menu Items Data and Filtering System (menu-filter.js)
- * Manages the menu database, dynamic rendering, and filtering logic.
- */
+// Vercel Serverless Function: api/menu.js
+// Manages the restaurant product catalog on Google Cloud Firestore via REST API
 
-// 1. Menu Database (Realistic items with prices & tags)
 const DEFAULT_MENU_ITEMS = [
-    // --- THỊT NƯỚNG (nuong) ---
     {
         id: "nuong-de-vuong",
         name: "Bò Nướng Đế Vương",
@@ -216,8 +212,6 @@ const DEFAULT_MENU_ITEMS = [
         bestSeller: false,
         isNew: false
     },
-
-    // --- HẢI SẢN NƯỚNG (haisan) ---
     {
         id: "haisan-tom-muoi-ot",
         name: "Tôm Nướng Sốt Muối Ớt",
@@ -274,8 +268,6 @@ const DEFAULT_MENU_ITEMS = [
         bestSeller: false,
         isNew: false
     },
-
-    // --- SET COMBO (combo) ---
     {
         id: "combo-am-ap",
         name: "Combo Siêu Ấm Áp Lẩu Nướng",
@@ -402,8 +394,6 @@ const DEFAULT_MENU_ITEMS = [
         bestSeller: false,
         isNew: false
     },
-
-    // --- KHAI VỊ & SALAD (khai-vi / salad) ---
     {
         id: "app-salad-trung-ngam",
         name: "Salad Trứng Ngâm Tương",
@@ -558,8 +548,6 @@ const DEFAULT_MENU_ITEMS = [
         bestSeller: false,
         isNew: false
     },
-
-    // --- MÓN CHỜ - MÓN ĐỢI (salad) ---
     {
         id: "side-tokbokki",
         name: "Tokbokki Sốt Phô Mai Cay",
@@ -672,8 +660,6 @@ const DEFAULT_MENU_ITEMS = [
         bestSeller: false,
         isNew: false
     },
-
-    // --- CƠM & MỲ (nong) ---
     {
         id: "nong-com-chien-hs",
         name: "Cơm Chiên Hải Sản Hạt Tơi",
@@ -814,8 +800,6 @@ const DEFAULT_MENU_ITEMS = [
         bestSeller: false,
         isNew: false
     },
-
-    // --- LẨU (lau) ---
     {
         id: "lau-uyen-uong",
         name: "Lẩu Uyên Ương Hai Ngăn",
@@ -844,8 +828,6 @@ const DEFAULT_MENU_ITEMS = [
         bestSeller: true,
         isNew: false
     },
-
-    // --- ĐỒ UỐNG (drink) ---
     {
         id: "drink-sake",
         name: "Rượu Sake Nhật Bản (300ML)",
@@ -946,324 +928,205 @@ const DEFAULT_MENU_ITEMS = [
     }
 ];
 
-// Initialize dynamic MENU_ITEMS array
-let MENU_ITEMS = [];
+export default async function handler(req, res) {
+    // Enable CORS
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
+    res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
-// Helper to load local menu fallback
-function loadLocalMenuFallback() {
-    try {
-        const storedMenu = localStorage.getItem('totoro_menu');
-        if (storedMenu) {
-            MENU_ITEMS = JSON.parse(storedMenu);
-        } else {
-            MENU_ITEMS = [...DEFAULT_MENU_ITEMS];
-            localStorage.setItem('totoro_menu', JSON.stringify(MENU_ITEMS));
-        }
-    } catch (e) {
-        MENU_ITEMS = [...DEFAULT_MENU_ITEMS];
+    if (req.method === 'OPTIONS') {
+        return res.status(200).end();
     }
-}
 
-// 2. DOM Rendering & Filtering Logic
-let selectedProductForModal = null;
+    const projectId = process.env.FIREBASE_PROJECT_ID;
+    const apiKey = process.env.FIREBASE_API_KEY;
 
-document.addEventListener('DOMContentLoaded', function() {
-    // Fetch menu from Vercel Serverless Backend
-    fetch('/api/menu')
-        .then(res => res.json())
-        .then(data => {
-            if (data && !data.error) {
-                if (data.fallback && data.menu) {
-                    loadLocalMenuFallback();
-                } else if (Array.isArray(data)) {
-                    MENU_ITEMS = data;
-                } else {
-                    loadLocalMenuFallback();
+    // Check if configuration is missing -> Fallback Mode
+    const isFallbackMode = !projectId || !apiKey;
+
+    if (req.method === 'GET') {
+        try {
+            if (isFallbackMode) {
+                return res.status(200).json({ 
+                    fallback: true,
+                    menu: DEFAULT_MENU_ITEMS 
+                });
+            }
+
+            const getUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/menu?key=${apiKey}`;
+            const response = await fetch(getUrl);
+            const data = await response.json();
+
+            if (!response.ok) {
+                // If it's a 404 (Collection doesn't exist yet), let's auto-seed!
+                if (response.status === 404 || !data.documents) {
+                    await seedDefaultMenu(projectId, apiKey);
+                    return res.status(200).json(DEFAULT_MENU_ITEMS);
                 }
+                return res.status(response.status).json({ 
+                    error: data.error?.message || "Failed to fetch menu from Firestore." 
+                });
+            }
+
+            // If empty collection
+            if (!data.documents || data.documents.length === 0) {
+                await seedDefaultMenu(projectId, apiKey);
+                return res.status(200).json(DEFAULT_MENU_ITEMS);
+            }
+
+            // Map Firestore documents to flat JSON array
+            const menuItems = data.documents.map(doc => {
+                const fields = doc.fields || {};
+                return {
+                    id: fields.id?.stringValue || doc.name.split('/').pop(),
+                    name: fields.name?.stringValue || "",
+                    category: fields.category?.stringValue || "",
+                    price: parseInt(fields.price?.integerValue || 0),
+                    image: fields.image?.stringValue || "",
+                    desc: fields.desc?.stringValue || "",
+                    spicy: !!fields.spicy?.booleanValue,
+                    cooked: !!fields.cooked?.booleanValue,
+                    raw: !!fields.raw?.booleanValue,
+                    childFriendly: !!fields.childFriendly?.booleanValue,
+                    bestSeller: !!fields.bestSeller?.booleanValue,
+                    isNew: !!fields.isNew?.booleanValue
+                };
+            });
+
+            return res.status(200).json(menuItems);
+        } catch (err) {
+            return res.status(500).json({ error: err.message, fallback: DEFAULT_MENU_ITEMS });
+        }
+    }
+
+    if (req.method === 'POST') {
+        try {
+            const item = req.body; // { id, name, category, price, image, desc, spicy, cooked, raw, childFriendly, bestSeller, isNew }
+
+            if (!item.id || !item.name || !item.category) {
+                return res.status(400).json({ error: "Missing required fields (id, name, category)." });
+            }
+
+            if (isFallbackMode) {
+                return res.status(200).json({ success: true, id: item.id, fallback: true });
+            }
+
+            // Map flat JSON to Firestore format
+            const firestorePayload = {
+                fields: {
+                    id: { stringValue: item.id },
+                    name: { stringValue: item.name },
+                    category: { stringValue: item.category },
+                    price: { integerValue: parseInt(item.price) || 0 },
+                    image: { stringValue: item.image || "" },
+                    desc: { stringValue: item.desc || "" },
+                    spicy: { booleanValue: !!item.spicy },
+                    cooked: { booleanValue: !!item.cooked },
+                    raw: { booleanValue: !!item.raw },
+                    childFriendly: { booleanValue: !!item.childFriendly },
+                    bestSeller: { booleanValue: !!item.bestSeller },
+                    isNew: { booleanValue: !!item.isNew }
+                }
+            };
+
+            const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/menu?documentId=${item.id}&key=${apiKey}`;
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(firestorePayload)
+            });
+
+            // If it already exists, Firestore returns error ALREADY_EXISTS. In that case, we PATCH (update) it!
+            if (response.status === 409) {
+                const patchUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/menu/${item.id}?key=${apiKey}`;
+                const patchResponse = await fetch(patchUrl, {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(firestorePayload)
+                });
+                
+                const patchData = await patchResponse.json();
+                if (patchResponse.ok) {
+                    return res.status(200).json({ success: true, id: item.id, updated: true });
+                } else {
+                    return res.status(patchResponse.status).json({ error: patchData.error?.message || "Failed to update menu item." });
+                }
+            }
+
+            const data = await response.json();
+
+            if (response.ok) {
+                return res.status(200).json({ success: true, id: item.id });
             } else {
-                loadLocalMenuFallback();
+                return res.status(response.status).json({ 
+                    error: data.error?.message || "Failed to write menu item.",
+                    details: data
+                });
             }
-        })
-        .catch(err => {
-            console.warn("Backend API not reachable, loading fallback:", err);
-            loadLocalMenuFallback();
-        })
-        .finally(() => {
-            renderMenuGrids();
-            setupFilters();
-            setupModalEvents();
-        });
-});
-
-// Render function for index.html (Best Sellers) & menu.html (Full filtered list)
-function renderMenuGrids(itemsToRender = MENU_ITEMS) {
-    // A. For Homepage (Best Sellers only - max 6 items)
-    const bestSellerGrid = document.getElementById('bestseller-grid');
-    if (bestSellerGrid) {
-        const bestSellers = MENU_ITEMS.filter(item => item.bestSeller).slice(0, 6);
-        bestSellerGrid.innerHTML = bestSellers.map(item => generateProductCardHtml(item)).join('');
-        setupCardClicks(bestSellerGrid);
+        } catch (err) {
+            return res.status(500).json({ error: err.message });
+        }
     }
 
-    // B. For Menu Page (All items with full filter options)
-    const mainMenuGrid = document.getElementById('main-menu-grid');
-    if (mainMenuGrid) {
-        if (itemsToRender.length === 0) {
-            mainMenuGrid.innerHTML = `
-                <div class="empty-cart-view" style="grid-column: 1 / -1;">
-                    <div class="empty-cart-icon">🍱</div>
-                    <h3>Không tìm thấy món ăn nào phù hợp!</h3>
-                    <p style="color: var(--color-text-muted);">Quý khách vui lòng điều chỉnh lại bộ lọc hoặc từ khóa tìm kiếm.</p>
-                </div>
-            `;
-            return;
-        }
-        mainMenuGrid.innerHTML = itemsToRender.map(item => generateProductCardHtml(item)).join('');
-        setupCardClicks(mainMenuGrid);
-    }
-}
-
-// Generate product card HTML snippet
-function generateProductCardHtml(item) {
-    const badgeHtml = item.bestSeller 
-        ? `<span class="product-card-badge">Bán Chạy</span>` 
-        : (item.isNew ? `<span class="product-card-badge new">Món Mới</span>` : '');
-
-    const tagsHtml = [];
-    if (item.spicy) tagsHtml.push('🌶️');
-    if (item.raw) tagsHtml.push('🍣 Món Sống');
-    if (item.childFriendly) tagsHtml.push('👶 Cho Bé');
-    const tagsString = tagsHtml.length > 0 
-        ? `<div style="font-size: 11px; margin-top: 4px; color: var(--color-primary); font-weight: 700;">${tagsHtml.join(' | ')}</div>` 
-        : '';
-
-    return `
-        <div class="product-card" data-id="${item.id}">
-            ${badgeHtml}
-            <div class="product-card-img-wrapper" style="cursor: pointer;">
-                <img src="${item.image}" alt="${item.name}" class="product-card-img" loading="lazy" />
-            </div>
-            <div class="product-card-body">
-                <h3 class="product-card-title" style="cursor: pointer;">${item.name}</h3>
-                ${tagsString}
-                <p class="product-card-desc" style="margin-top: 6px;">${item.desc}</p>
-                <div class="product-card-footer">
-                    <span class="product-card-price">${item.price.toLocaleString('vi-VN')}đ</span>
-                    <button class="product-card-btn add-to-cart-quick" data-id="${item.id}" aria-label="Thêm vào giỏ">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
-                    </button>
-                </div>
-            </div>
-        </div>
-    `;
-}
-
-// Setup card click event triggers to open details modal
-function setupCardClicks(container) {
-    // 1. Click on image or title -> opens details modal
-    container.querySelectorAll('.product-card-img-wrapper, .product-card-title').forEach(el => {
-        el.addEventListener('click', function(e) {
-            const card = this.closest('.product-card');
-            const id = card.getAttribute('data-id');
-            openProductModal(id);
-        });
-    });
-
-    // 2. Click on quick add to cart button -> adds to cart directly
-    container.querySelectorAll('.add-to-cart-quick').forEach(btn => {
-        btn.addEventListener('click', function(e) {
-            e.stopPropagation();
-            const id = this.getAttribute('data-id');
-            const item = MENU_ITEMS.find(i => i.id === id);
-            if (item && typeof addToCart === 'function') {
-                addToCart(item, 1);
-            }
-        });
-    });
-}
-
-// Setup the filter, search and sort controls in menu.html
-function setupFilters() {
-    const searchInput = document.getElementById('menu-search-input');
-    const categoryButtons = document.querySelectorAll('.filter-tag-btn[data-category]');
-    const propFilters = document.querySelectorAll('.filter-tag-btn[data-prop]');
-    const sortSelect = document.getElementById('menu-sort-select');
-    const priceRangeInput = document.getElementById('menu-price-range');
-    const priceDisplay = document.getElementById('menu-price-display');
-
-    if (!searchInput && categoryButtons.length === 0) return; // Not on Menu page
-
-    let currentFilters = {
-        category: 'all',
-        search: '',
-        maxPrice: 600000,
-        props: [] // spicy, raw, cooked, childFriendly
-    };
-
-    const applyAllFilters = function() {
-        let filtered = [...MENU_ITEMS];
-
-        // 1. Filter Category
-        if (currentFilters.category !== 'all') {
-            filtered = filtered.filter(item => item.category === currentFilters.category);
-        }
-
-        // 2. Filter Search Term
-        if (currentFilters.search) {
-            const keyword = currentFilters.search.toLowerCase().trim();
-            filtered = filtered.filter(item => 
-                item.name.toLowerCase().includes(keyword) || 
-                item.desc.toLowerCase().includes(keyword)
-            );
-        }
-
-        // 3. Filter Price
-        if (priceRangeInput) {
-            currentFilters.maxPrice = parseInt(priceRangeInput.value);
-            filtered = filtered.filter(item => item.price <= currentFilters.maxPrice);
-            if (priceDisplay) {
-                priceDisplay.textContent = currentFilters.maxPrice.toLocaleString('vi-VN') + 'đ';
-            }
-        }
-
-        // 4. Filter Attributes
-        currentFilters.props.forEach(prop => {
-            filtered = filtered.filter(item => item[prop]);
-        });
-
-        // 5. Apply Sorting
-        if (sortSelect) {
-            const sortBy = sortSelect.value;
-            if (sortBy === 'price-asc') {
-                filtered.sort((a, b) => a.price - b.price);
-            } else if (sortBy === 'price-desc') {
-                filtered.sort((a, b) => b.price - a.price);
-            } else if (sortBy === 'newest') {
-                filtered.sort((a, b) => (b.isNew ? 1 : 0) - (a.isNew ? 1 : 0));
-            } else if (sortBy === 'bestseller') {
-                filtered.sort((a, b) => (b.bestSeller ? 1 : 0) - (a.bestSeller ? 1 : 0));
-            }
-        }
-
-        renderMenuGrids(filtered);
-    };
-
-    // Listeners for Search input
-    if (searchInput) {
-        searchInput.addEventListener('input', function() {
-            currentFilters.search = this.value;
-            applyAllFilters();
-        });
-    }
-
-    // Listeners for Category buttons
-    categoryButtons.forEach(btn => {
-        btn.addEventListener('click', function() {
-            categoryButtons.forEach(b => b.classList.remove('active'));
-            this.classList.add('active');
-            currentFilters.category = this.getAttribute('data-category');
-            applyAllFilters();
-        });
-    });
-
-    // Listeners for Property attribute buttons (multiselect)
-    propFilters.forEach(btn => {
-        btn.addEventListener('click', function() {
-            const prop = this.getAttribute('data-prop');
-            this.classList.toggle('active');
+    if (req.method === 'DELETE') {
+        try {
+            const { id } = req.body;
             
-            if (this.classList.contains('active')) {
-                currentFilters.props.push(prop);
+            if (!id) {
+                return res.status(400).json({ error: "Missing required parameter (id)." });
+            }
+
+            if (isFallbackMode) {
+                return res.status(200).json({ success: true, fallback: true });
+            }
+
+            const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/menu/${id}?key=${apiKey}`;
+            const response = await fetch(url, { method: 'DELETE' });
+
+            if (response.ok) {
+                return res.status(200).json({ success: true });
             } else {
-                currentFilters.props = currentFilters.props.filter(p => p !== prop);
+                const data = await response.json();
+                return res.status(response.status).json({ error: data.error?.message || "Failed to delete menu item." });
             }
-            applyAllFilters();
-        });
-    });
-
-    // Listeners for Sorting select
-    if (sortSelect) {
-        sortSelect.addEventListener('change', applyAllFilters);
-    }
-
-    // Listeners for Price range slider
-    if (priceRangeInput) {
-        priceRangeInput.addEventListener('input', applyAllFilters);
-    }
-}
-
-// 3. Details Modal Logic
-function openProductModal(productId) {
-    const item = MENU_ITEMS.find(i => i.id === productId);
-    if (!item) return;
-
-    selectedProductForModal = item;
-
-    const modal = document.getElementById('product-detail-modal');
-    if (!modal) return;
-
-    // Fill details
-    modal.querySelector('.modal-img').src = item.image;
-    modal.querySelector('.modal-img').alt = item.name;
-    modal.querySelector('.modal-title').textContent = item.name;
-    modal.querySelector('.modal-price').textContent = item.price.toLocaleString('vi-VN') + 'đ';
-    modal.querySelector('.modal-desc').textContent = item.desc;
-    
-    // Reset quantity to 1
-    modal.querySelector('.quantity-input').value = 1;
-
-    // Open modal
-    modal.classList.add('open');
-}
-
-function setupModalEvents() {
-    const modal = document.getElementById('product-detail-modal');
-    if (!modal) return;
-
-    // Close button
-    const closeBtn = modal.querySelector('.modal-close-btn');
-    if (closeBtn) {
-        closeBtn.addEventListener('click', () => {
-            modal.classList.remove('open');
-            selectedProductForModal = null;
-        });
-    }
-
-    // Click outside close
-    modal.addEventListener('click', function(e) {
-        if (e.target === modal) {
-            modal.classList.remove('open');
-            selectedProductForModal = null;
+        } catch (err) {
+            return res.status(500).json({ error: err.message });
         }
-    });
-
-    // Plus & Minus buttons inside modal
-    const plusBtn = modal.querySelector('.qty-plus');
-    const minusBtn = modal.querySelector('.qty-minus');
-    const qtyInput = modal.querySelector('.quantity-input');
-
-    if (plusBtn && minusBtn && qtyInput) {
-        plusBtn.addEventListener('click', () => {
-            let val = parseInt(qtyInput.value) || 1;
-            qtyInput.value = val + 1;
-        });
-
-        minusBtn.addEventListener('click', () => {
-            let val = parseInt(qtyInput.value) || 1;
-            if (val > 1) qtyInput.value = val - 1;
-        });
     }
 
-    // Add to cart button inside modal
-    const addToCartBtn = modal.getElementById('modal-add-to-cart-btn');
-    if (addToCartBtn) {
-        addToCartBtn.addEventListener('click', () => {
-            if (selectedProductForModal && typeof addToCart === 'function') {
-                const qty = parseInt(qtyInput.value) || 1;
-                addToCart(selectedProductForModal, qty);
-                modal.classList.remove('open');
-                selectedProductForModal = null;
-            }
-        });
+    return res.status(405).json({ error: "Method not allowed." });
+}
+
+// Private helper to seed database on first run
+async function seedDefaultMenu(projectId, apiKey) {
+    try {
+        console.log("Seeding Firestore with default menu items...");
+        for (const item of DEFAULT_MENU_ITEMS) {
+            const firestorePayload = {
+                fields: {
+                    id: { stringValue: item.id },
+                    name: { stringValue: item.name },
+                    category: { stringValue: item.category },
+                    price: { integerValue: parseInt(item.price) || 0 },
+                    image: { stringValue: item.image || "" },
+                    desc: { stringValue: item.desc || "" },
+                    spicy: { booleanValue: !!item.spicy },
+                    cooked: { booleanValue: !!item.cooked },
+                    raw: { booleanValue: !!item.raw },
+                    childFriendly: { booleanValue: !!item.childFriendly },
+                    bestSeller: { booleanValue: !!item.bestSeller },
+                    isNew: { booleanValue: !!item.isNew }
+                }
+            };
+            const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/menu?documentId=${item.id}&key=${apiKey}`;
+            await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(firestorePayload)
+            });
+        }
+        console.log("Seeding menu completed!");
+    } catch (e) {
+        console.error("Auto-seeding menu failed:", e);
     }
 }

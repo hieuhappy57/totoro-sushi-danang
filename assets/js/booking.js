@@ -79,30 +79,49 @@ function initBookingForms() {
                     createdAt: new Date().toISOString()
                 };
 
-                // Save to localStorage
-                let bookings = [];
-                try {
-                    bookings = JSON.parse(localStorage.getItem('totoro_bookings') || '[]');
-                } catch (err) {
-                    bookings = [];
-                }
-                bookings.unshift(bookingData);
-                localStorage.setItem('totoro_bookings', JSON.stringify(bookings));
+                // Send to Serverless Backend
+                fetch('/api/booking', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(bookingData)
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.fallback) {
+                        saveBookingToLocalStorage(bookingData);
+                    }
+                    showBookingSuccessModal(bookingData);
+                })
+                .catch(err => {
+                    console.warn("Backend error, falling back to LocalStorage:", err);
+                    saveBookingToLocalStorage(bookingData);
+                    showBookingSuccessModal(bookingData);
+                })
+                .finally(() => {
+                    // Reset button state
+                    submitBtn.disabled = false;
+                    submitBtn.innerHTML = originalBtnText;
 
-                // Show success modal popup
-                showBookingSuccessModal(bookingData);
-
-                // Reset button state
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalBtnText;
-
-                // Reset form fields
-                form.reset();
-                if (dateInput) dateInput.value = todayString;
+                    // Reset form fields
+                    form.reset();
+                    if (dateInput) dateInput.value = todayString;
+                });
 
             }, 1500);
         });
     });
+}
+
+// Helper to write to LocalStorage fallback
+function saveBookingToLocalStorage(bookingData) {
+    let bookings = [];
+    try {
+        bookings = JSON.parse(localStorage.getItem('totoro_bookings') || '[]');
+    } catch (err) {
+        bookings = [];
+    }
+    bookings.unshift(bookingData);
+    localStorage.setItem('totoro_bookings', JSON.stringify(bookings));
 }
 
 // Render and show details in Booking Success Modal
@@ -139,6 +158,12 @@ function showBookingSuccessModal(details) {
                         * Nhân viên nhà hàng sẽ gọi điện xác nhận đặt bàn trực tiếp tới số điện thoại này trong vòng 10-15 phút. Xin chân thành cảm ơn!
                     </p>
                     
+                    <a href="#" target="_blank" class="btn" id="send-messenger-booking-btn" style="margin-top: 5px; width: 100%; display: flex; align-items: center; justify-content: center; gap: 8px; background-color: #0084FF; color: white; border: none; font-weight: 700; text-decoration: none; border-radius: var(--radius-sm); padding: 12px;">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                            <path d="M16 8c0 3.866-3.582 7-8 7a8.841 8.841 0 0 1-4.227-1.073L0 15l1.096-3.235C.383 10.59 0 9.336 0 8c0-3.866 3.582-7 8-7s8 3.134 8 7zM5 8a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0zm4 0a1 1 0 1 0-2 0 1 1 0 0 0 2 0z"/>
+                        </svg> Gửi Xác Nhận Qua Messenger
+                    </a>
+
                     <button type="button" class="btn btn-primary" id="confirm-booking-success-btn" style="margin-top: 10px; width: 100%;">Đóng và Trở Về</button>
                 </div>
             </div>
@@ -177,6 +202,22 @@ function showBookingSuccessModal(details) {
         notesSpan.textContent = details.notes;
     } else {
         notesRow.style.display = 'none';
+    }
+
+    // Configure Facebook Messenger redirect text
+    const fbPageName = 'totoronuongsushi';
+    const msgText = `Xin chào Totoro Nướng & Sushi! Tôi muốn gửi thông tin xác nhận đặt bàn của tôi:
+- Họ tên: ${details.name}
+- SĐT: ${details.phone}
+- Ngày đặt: ${formattedDate}
+- Giờ đặt: ${details.time}
+- Số khách: ${details.adults} người lớn${details.kids > 0 ? `, ${details.kids} trẻ em` : ''}
+${details.notes ? `- Ghi chú: ${details.notes}` : ''}`;
+
+    const encodedMsg = encodeURIComponent(msgText);
+    const messengerBtn = successModal.querySelector('#send-messenger-booking-btn');
+    if (messengerBtn) {
+        messengerBtn.href = `https://m.me/${fbPageName}?text=${encodedMsg}`;
     }
 
     // Open success details modal popup

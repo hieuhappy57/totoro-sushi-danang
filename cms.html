@@ -413,6 +413,12 @@
                 </div>
 
                 <div class="booking-form-group">
+                    <label class="booking-form-label">Hoặc tải ảnh lên từ máy tính (Firebase Storage)</label>
+                    <input type="file" id="modal-product-file" class="form-control" accept="image/*" />
+                    <div id="modal-product-upload-status" style="font-size: 11px; margin-top: 5px; color: var(--color-primary); font-weight: 700;"></div>
+                </div>
+
+                <div class="booking-form-group">
                     <label class="booking-form-label">Mô tả món ăn *</label>
                     <textarea id="modal-product-desc" class="form-control" style="min-height: 80px;" placeholder="Mô tả thành phần, độ ngon của món ăn..." required></textarea>
                 </div>
@@ -491,10 +497,56 @@
 
         // Initialize orders, bookings, and menu lists
         function initCmsData() {
-            refreshCmsOrders();
-            refreshCmsBookings();
-            refreshCmsMenuTable();
-            updateStatistics();
+            // Show loading placeholder states in tables
+            document.getElementById('cms-orders-tbody').innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 25px;"><span class="loading-spinner" style="width: 24px; height: 24px;"></span> Đang tải đơn hàng...</td></tr>`;
+            document.getElementById('cms-bookings-tbody').innerHTML = `<tr><td colspan="7" style="text-align: center; padding: 25px;"><span class="loading-spinner" style="width: 24px; height: 24px;"></span> Đang tải lịch đặt...</td></tr>`;
+            document.getElementById('cms-menu-tbody').innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 25px;"><span class="loading-spinner" style="width: 24px; height: 24px;"></span> Đang tải thực đơn...</td></tr>`;
+
+            Promise.all([
+                fetch('/api/order').then(res => res.json()).catch(err => ({ fallback: true })),
+                fetch('/api/booking').then(res => res.json()).catch(err => ({ fallback: true })),
+                fetch('/api/menu').then(res => res.json()).catch(err => ({ fallback: true }))
+            ]).then(([ordersRes, bookingsRes, menuRes]) => {
+                // Parse Orders
+                if (ordersRes && !ordersRes.error) {
+                    if (ordersRes.fallback) {
+                        CMS_ORDERS = JSON.parse(localStorage.getItem('totoro_orders') || '[]');
+                    } else {
+                        CMS_ORDERS = ordersRes;
+                    }
+                } else {
+                    CMS_ORDERS = JSON.parse(localStorage.getItem('totoro_orders') || '[]');
+                }
+
+                // Parse Bookings
+                if (bookingsRes && !bookingsRes.error) {
+                    if (bookingsRes.fallback) {
+                        CMS_BOOKINGS = JSON.parse(localStorage.getItem('totoro_bookings') || '[]');
+                    } else {
+                        CMS_BOOKINGS = bookingsRes;
+                    }
+                } else {
+                    CMS_BOOKINGS = JSON.parse(localStorage.getItem('totoro_bookings') || '[]');
+                }
+
+                // Parse Menu
+                if (menuRes && !menuRes.error) {
+                    if (menuRes.fallback && menuRes.menu) {
+                        CMS_MENU = JSON.parse(localStorage.getItem('totoro_menu') || '[]');
+                    } else if (Array.isArray(menuRes)) {
+                        CMS_MENU = menuRes;
+                    } else {
+                        CMS_MENU = JSON.parse(localStorage.getItem('totoro_menu') || '[]');
+                    }
+                } else {
+                    CMS_MENU = JSON.parse(localStorage.getItem('totoro_menu') || '[]');
+                }
+
+                refreshCmsOrders();
+                refreshCmsBookings();
+                refreshCmsMenuTable();
+                updateStatistics();
+            });
 
             // Seed Data Trigger
             document.getElementById('btn-seed-data').addEventListener('click', seedMockData);
@@ -608,21 +660,22 @@
             return `${yyyy}-${mm}-${dd}`;
         }
 
+        // Global dashboard state arrays loaded from Vercel Serverless Backend (or local fallback)
+        let CMS_ORDERS = [];
+        let CMS_BOOKINGS = [];
+        let CMS_MENU = [];
+
         // Calculate and show dashboard summary numbers
         function updateStatistics() {
-            let orders = JSON.parse(localStorage.getItem('totoro_orders') || '[]');
-            let bookings = JSON.parse(localStorage.getItem('totoro_bookings') || '[]');
-            let menu = JSON.parse(localStorage.getItem('totoro_menu') || '[]');
-
             // Revenue: Sum total of orders except Cancelled orders
-            const revenue = orders
+            const revenue = CMS_ORDERS
                 .filter(o => o.status !== 'Đã hủy')
                 .reduce((sum, o) => sum + o.total, 0);
 
             document.getElementById('stat-revenue').textContent = revenue.toLocaleString('vi-VN') + 'đ';
-            document.getElementById('stat-orders-count').textContent = orders.length + ' Đơn';
-            document.getElementById('stat-bookings-count').textContent = bookings.length + ' Lịch';
-            document.getElementById('stat-menu-count').textContent = menu.length + ' Món';
+            document.getElementById('stat-orders-count').textContent = CMS_ORDERS.length + ' Đơn';
+            document.getElementById('stat-bookings-count').textContent = CMS_BOOKINGS.length + ' Lịch';
+            document.getElementById('stat-menu-count').textContent = CMS_MENU.length + ' Món';
         }
 
         // 1. ORDERS MANAGER TABLE
@@ -630,22 +683,21 @@
             const tbody = document.getElementById('cms-orders-tbody');
             if (!tbody) return;
 
-            let orders = JSON.parse(localStorage.getItem('totoro_orders') || '[]');
-            document.getElementById('orders-summary-label').textContent = `Hiển thị ${orders.length} đơn hàng`;
+            document.getElementById('orders-summary-label').textContent = `Hiển thị ${CMS_ORDERS.length} đơn hàng`;
 
-            if (orders.length === 0) {
+            if (CMS_ORDERS.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--color-text-muted); padding: 30px 0;">Chưa có đơn đặt món nào trực tuyến.</td></tr>`;
                 return;
             }
 
-            tbody.innerHTML = orders.map(o => {
+            tbody.innerHTML = CMS_ORDERS.map(o => {
                 let badgeClass = 'badge-pending';
                 if (o.status === 'Đang chuẩn bị') badgeClass = 'badge-processing';
                 else if (o.status === 'Đang giao') badgeClass = 'badge-shipping';
                 else if (o.status === 'Đã hoàn thành') badgeClass = 'badge-success';
                 else if (o.status === 'Đã hủy') badgeClass = 'badge-cancel';
 
-                const itemsList = o.items.map(item => `${item.name} (${item.quantity})`).join(', ');
+                const itemsList = (o.items || []).map(item => `${item.name} (${item.quantity})`).join(', ');
 
                 return `
                     <tr>
@@ -679,14 +731,32 @@
         }
 
         window.updateOrderStatus = function(orderId, newStatus) {
-            let orders = JSON.parse(localStorage.getItem('totoro_orders') || '[]');
-            const index = orders.findIndex(o => o.id === orderId);
+            const index = CMS_ORDERS.findIndex(o => o.id === orderId);
             if (index !== -1) {
-                orders[index].status = newStatus;
-                localStorage.setItem('totoro_orders', JSON.stringify(orders));
-                showAlert(`Đã cập nhật trạng thái đơn ${orderId} thành "${newStatus}"!`);
-                refreshCmsOrders();
-                updateStatistics();
+                CMS_ORDERS[index].status = newStatus;
+                
+                // Call Serverless PATCH
+                fetch('/api/order', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: orderId, status: newStatus })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.fallback) {
+                        localStorage.setItem('totoro_orders', JSON.stringify(CMS_ORDERS));
+                    }
+                    showAlert(`Đã duyệt đơn ${orderId} chuyển sang: "${newStatus}"!`);
+                    refreshCmsOrders();
+                    updateStatistics();
+                })
+                .catch(err => {
+                    console.warn("Backend error updating order, falling back to LocalStorage:", err);
+                    localStorage.setItem('totoro_orders', JSON.stringify(CMS_ORDERS));
+                    showAlert(`Đã duyệt đơn ${orderId} chuyển sang: "${newStatus}" (Offline)!`);
+                    refreshCmsOrders();
+                    updateStatistics();
+                });
             }
         };
 
@@ -695,15 +765,14 @@
             const tbody = document.getElementById('cms-bookings-tbody');
             if (!tbody) return;
 
-            let bookings = JSON.parse(localStorage.getItem('totoro_bookings') || '[]');
-            document.getElementById('bookings-summary-label').textContent = `Hiển thị ${bookings.length} lịch đặt`;
+            document.getElementById('bookings-summary-label').textContent = `Hiển thị ${CMS_BOOKINGS.length} lịch đặt`;
 
-            if (bookings.length === 0) {
+            if (CMS_BOOKINGS.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="7" style="text-align: center; color: var(--color-text-muted); padding: 30px 0;">Chưa có lịch đặt bàn nào.</td></tr>`;
                 return;
             }
 
-            tbody.innerHTML = bookings.map(b => {
+            tbody.innerHTML = CMS_BOOKINGS.map(b => {
                 let badgeClass = 'badge-pending';
                 if (b.status === 'Đã xác nhận') badgeClass = 'badge-success';
                 else if (b.status === 'Đã hủy') badgeClass = 'badge-cancel';
@@ -738,14 +807,32 @@
         }
 
         window.updateBookingStatus = function(bookingId, newStatus) {
-            let bookings = JSON.parse(localStorage.getItem('totoro_bookings') || '[]');
-            const index = bookings.findIndex(b => b.id === bookingId);
+            const index = CMS_BOOKINGS.findIndex(b => b.id === bookingId);
             if (index !== -1) {
-                bookings[index].status = newStatus;
-                localStorage.setItem('totoro_bookings', JSON.stringify(bookings));
-                showAlert(`Đã cập nhật trạng thái lịch đặt ${bookingId} thành "${newStatus}"!`);
-                refreshCmsBookings();
-                updateStatistics();
+                CMS_BOOKINGS[index].status = newStatus;
+                
+                // Call Serverless PATCH
+                fetch('/api/booking', {
+                    method: 'PATCH',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: bookingId, status: newStatus })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.fallback) {
+                        localStorage.setItem('totoro_bookings', JSON.stringify(CMS_BOOKINGS));
+                    }
+                    showAlert(`Đã cập nhật trạng thái lịch đặt ${bookingId} thành "${newStatus}"!`);
+                    refreshCmsBookings();
+                    updateStatistics();
+                })
+                .catch(err => {
+                    console.warn("Backend error updating booking, falling back to LocalStorage:", err);
+                    localStorage.setItem('totoro_bookings', JSON.stringify(CMS_BOOKINGS));
+                    showAlert(`Đã cập nhật trạng thái lịch đặt ${bookingId} thành "${newStatus}" (Offline)!`);
+                    refreshCmsBookings();
+                    updateStatistics();
+                });
             }
         };
 
@@ -754,9 +841,7 @@
             const tbody = document.getElementById('cms-menu-tbody');
             if (!tbody) return;
 
-            let menu = JSON.parse(localStorage.getItem('totoro_menu') || '[]');
-
-            if (menu.length === 0) {
+            if (CMS_MENU.length === 0) {
                 tbody.innerHTML = `<tr><td colspan="6" style="text-align: center; color: var(--color-text-muted); padding: 30px 0;">Không có món ăn nào trong thực đơn.</td></tr>`;
                 return;
             }
@@ -773,7 +858,7 @@
                 'drink': 'Đồ Uống'
             };
 
-            tbody.innerHTML = menu.map(item => {
+            tbody.innerHTML = CMS_MENU.map(item => {
                 const labels = [];
                 if (item.bestSeller) labels.push(`<span class="status-badge badge-success" style="padding:2px 4px; font-size:9px;">Bán Chạy</span>`);
                 if (item.isNew) labels.push(`<span class="status-badge badge-processing" style="padding:2px 4px; font-size:9px;">Mới</span>`);
@@ -809,18 +894,31 @@
         // CRUD: Delete Menu Item
         window.deleteMenuItem = function(id) {
             if (confirm('Bạn có chắc chắn muốn xóa món này khỏi thực đơn hiển thị không?')) {
-                let menu = JSON.parse(localStorage.getItem('totoro_menu') || '[]');
-                const filtered = menu.filter(item => item.id !== id);
-                localStorage.setItem('totoro_menu', JSON.stringify(filtered));
+                const oldMenu = [...CMS_MENU];
+                CMS_MENU = CMS_MENU.filter(item => item.id !== id);
                 
-                // update local memory array in menu-filter if loaded
-                if (typeof MENU_ITEMS !== 'undefined') {
-                    MENU_ITEMS = filtered;
-                }
-                
-                showAlert('Xóa món ăn thành công!');
-                refreshCmsMenuTable();
-                updateStatistics();
+                // Call Serverless DELETE
+                fetch('/api/menu', {
+                    method: 'DELETE',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: id })
+                })
+                .then(res => res.json())
+                .then(data => {
+                    if (data.fallback) {
+                        localStorage.setItem('totoro_menu', JSON.stringify(CMS_MENU));
+                    }
+                    showAlert('Xóa món ăn thành công!');
+                    refreshCmsMenuTable();
+                    updateStatistics();
+                })
+                .catch(err => {
+                    console.warn("Backend error deleting item, falling back to LocalStorage:", err);
+                    localStorage.setItem('totoro_menu', JSON.stringify(CMS_MENU));
+                    showAlert('Xóa món ăn thành công (Offline)!');
+                    refreshCmsMenuTable();
+                    updateStatistics();
+                });
             }
         };
 
@@ -834,11 +932,57 @@
 
             const closeModal = () => modal.classList.remove('open');
 
+            // File input upload handler
+            const fileInput = document.getElementById('modal-product-file');
+            const uploadStatus = document.getElementById('modal-product-upload-status');
+            
+            if (fileInput && uploadStatus) {
+                fileInput.addEventListener('change', function(e) {
+                    const file = e.target.files[0];
+                    if (!file) return;
+
+                    uploadStatus.style.color = 'var(--color-primary)';
+                    uploadStatus.textContent = '⏳ Đang tải ảnh lên Firebase...';
+
+                    const reader = new FileReader();
+                    reader.onload = function(evt) {
+                        const base64String = evt.target.result;
+                        
+                        // Call Vercel Upload API Proxy
+                        fetch('/api/upload', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({
+                                file: base64String,
+                                name: file.name
+                            })
+                        })
+                        .then(res => res.json())
+                        .then(data => {
+                            if (data.url) {
+                                document.getElementById('modal-product-image').value = data.url;
+                                uploadStatus.style.color = '#059669'; // Success Green
+                                uploadStatus.textContent = '✓ Tải ảnh lên Firebase Storage thành công!';
+                            } else {
+                                uploadStatus.style.color = 'var(--color-red)';
+                                uploadStatus.textContent = '✗ Lỗi: ' + (data.error || 'Không xác định');
+                            }
+                        })
+                        .catch(err => {
+                            console.error(err);
+                            uploadStatus.style.color = 'var(--color-red)';
+                            uploadStatus.textContent = '✗ Lỗi kết nối API Upload: ' + err.message;
+                        });
+                    };
+                    reader.readAsDataURL(file);
+                });
+            }
+
             if (addBtn && modal) {
                 addBtn.addEventListener('click', function() {
-                    // Prepare form for Adding Product
                     document.getElementById('product-modal-title').textContent = 'Thêm Món Ăn Mới';
                     document.getElementById('modal-product-id').value = '';
+                    if (uploadStatus) uploadStatus.textContent = '';
                     form.reset();
                     modal.classList.add('open');
                 });
@@ -871,39 +1015,43 @@
                     const bestSeller = document.getElementById('modal-prop-bestseller').checked;
                     const isNew = document.getElementById('modal-prop-new').checked;
 
-                    let menu = JSON.parse(localStorage.getItem('totoro_menu') || '[]');
+                    const finalId = id || 'p-' + Date.now();
+                    const productData = {
+                        id: finalId, name, category, price, image, desc,
+                        spicy, cooked, raw, childFriendly, bestSeller, isNew
+                    };
 
-                    if (id) {
-                        // Edit Mode
-                        const index = menu.findIndex(item => item.id === id);
-                        if (index !== -1) {
-                            menu[index] = {
-                                id, name, category, price, image, desc,
-                                spicy, cooked, raw, childFriendly, bestSeller, isNew
-                            };
-                            showAlert('Cập nhật món ăn thành công!');
-                        }
+                    const index = CMS_MENU.findIndex(item => item.id === finalId);
+                    if (index !== -1) {
+                        CMS_MENU[index] = productData;
                     } else {
-                        // Add Mode
-                        const newId = 'p-' + Date.now();
-                        const newItem = {
-                            id: newId, name, category, price, image, desc,
-                            spicy, cooked, raw, childFriendly, bestSeller, isNew
-                        };
-                        menu.unshift(newItem);
-                        showAlert('Thêm món ăn mới thành công!');
+                        CMS_MENU.unshift(productData);
                     }
 
-                    localStorage.setItem('totoro_menu', JSON.stringify(menu));
-                    
-                    // Sync array
-                    if (typeof MENU_ITEMS !== 'undefined') {
-                        MENU_ITEMS = menu;
-                    }
-
-                    closeModal();
-                    refreshCmsMenuTable();
-                    updateStatistics();
+                    // Call Serverless POST
+                    fetch('/api/menu', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(productData)
+                    })
+                    .then(res => res.json())
+                    .then(data => {
+                        if (data.fallback) {
+                            localStorage.setItem('totoro_menu', JSON.stringify(CMS_MENU));
+                        }
+                        showAlert(id ? 'Cập nhật món ăn thành công!' : 'Thêm món ăn mới thành công!');
+                        closeModal();
+                        refreshCmsMenuTable();
+                        updateStatistics();
+                    })
+                    .catch(err => {
+                        console.warn("Backend error saving item, falling back to LocalStorage:", err);
+                        localStorage.setItem('totoro_menu', JSON.stringify(CMS_MENU));
+                        showAlert(id ? 'Cập nhật món ăn thành công (Offline)!' : 'Thêm món ăn mới thành công (Offline)!');
+                        closeModal();
+                        refreshCmsMenuTable();
+                        updateStatistics();
+                    });
                 });
             }
         }
@@ -911,8 +1059,7 @@
         // Open modal for editing
         window.openEditProductModal = function(id) {
             const modal = document.getElementById('cms-product-modal');
-            const menu = JSON.parse(localStorage.getItem('totoro_menu') || '[]');
-            const item = menu.find(i => i.id === id);
+            const item = CMS_MENU.find(i => i.id === id);
 
             if (!item || !modal) return;
 
@@ -923,6 +1070,12 @@
             document.getElementById('modal-product-category').value = item.category;
             document.getElementById('modal-product-image').value = item.image.startsWith('http') ? item.image : '';
             document.getElementById('modal-product-desc').value = item.desc;
+
+            // Reset upload file inputs
+            const fileInput = document.getElementById('modal-product-file');
+            if (fileInput) fileInput.value = '';
+            const uploadStatus = document.getElementById('modal-product-upload-status');
+            if (uploadStatus) uploadStatus.textContent = '';
 
             document.getElementById('modal-prop-spicy').checked = !!item.spicy;
             document.getElementById('modal-prop-cooked').checked = !!item.cooked;

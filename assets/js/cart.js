@@ -356,14 +356,22 @@ function initCartPage() {
                 createdAt: new Date().toISOString()
             };
 
-            let orders = [];
-            try {
-                orders = JSON.parse(localStorage.getItem('totoro_orders') || '[]');
-            } catch (e) {
-                orders = [];
-            }
-            orders.unshift(orderData);
-            localStorage.setItem('totoro_orders', JSON.stringify(orders));
+            // Send to Serverless Backend
+            fetch('/api/order', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(orderData)
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.fallback) {
+                    saveOrderToLocalStorage(orderData);
+                }
+            })
+            .catch(err => {
+                console.warn("Backend error, falling back to LocalStorage:", err);
+                saveOrderToLocalStorage(orderData);
+            });
 
             document.getElementById('display-order-total').textContent = total.toLocaleString('vi-VN') + 'đ';
 
@@ -398,4 +406,16 @@ function initCartPage() {
 
     // Initial render call
     renderCart();
+}
+
+// Helper to save order to LocalStorage in fallback mode
+function saveOrderToLocalStorage(orderData) {
+    let orders = [];
+    try {
+        orders = JSON.parse(localStorage.getItem('totoro_orders') || '[]');
+    } catch (e) {
+        orders = [];
+    }
+    orders.unshift(orderData);
+    localStorage.setItem('totoro_orders', JSON.stringify(orders));
 }
