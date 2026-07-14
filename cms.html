@@ -503,9 +503,9 @@
             document.getElementById('cms-menu-tbody').innerHTML = `<tr><td colspan="6" style="text-align: center; padding: 25px;"><span class="loading-spinner" style="width: 24px; height: 24px;"></span> Đang tải thực đơn...</td></tr>`;
 
             Promise.all([
-                fetch('/api/order').then(res => res.json()).catch(err => ({ fallback: true })),
-                fetch('/api/booking').then(res => res.json()).catch(err => ({ fallback: true })),
-                fetch('/api/menu').then(res => res.json()).catch(err => ({ fallback: true }))
+                fetch('/api/order?t=' + Date.now(), { cache: 'no-store' }).then(res => res.json()).catch(err => ({ fallback: true })),
+                fetch('/api/booking?t=' + Date.now(), { cache: 'no-store' }).then(res => res.json()).catch(err => ({ fallback: true })),
+                fetch('/api/menu?t=' + Date.now(), { cache: 'no-store' }).then(res => res.json()).catch(err => ({ fallback: true }))
             ]).then(([ordersRes, bookingsRes, menuRes]) => {
                 // Parse Orders
                 if (ordersRes && !ordersRes.error) {
@@ -905,9 +905,8 @@
                 })
                 .then(res => res.json())
                 .then(data => {
-                    if (data.fallback) {
-                        localStorage.setItem('totoro_menu', JSON.stringify(CMS_MENU));
-                    }
+                    // Always save to LocalStorage to keep fallback cache in sync
+                    localStorage.setItem('totoro_menu', JSON.stringify(CMS_MENU));
                     showAlert('Xóa món ăn thành công!');
                     refreshCmsMenuTable();
                     updateStatistics();
@@ -1033,9 +1032,8 @@
                     })
                     .then(res => res.json())
                     .then(data => {
-                        if (data.fallback) {
-                            localStorage.setItem('totoro_menu', JSON.stringify(CMS_MENU));
-                        }
+                        // Always save to LocalStorage to keep fallback cache in sync
+                        localStorage.setItem('totoro_menu', JSON.stringify(CMS_MENU));
                         showAlert(id ? 'Cập nhật món ăn thành công!' : 'Thêm món ăn mới thành công!');
                         closeModal();
                         refreshCmsMenuTable();

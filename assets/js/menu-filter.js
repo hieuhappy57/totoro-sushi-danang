@@ -968,8 +968,8 @@ function loadLocalMenuFallback() {
 let selectedProductForModal = null;
 
 document.addEventListener('DOMContentLoaded', function() {
-    // Fetch menu from Vercel Serverless Backend
-    fetch('/api/menu')
+    // Fetch menu from Vercel Serverless Backend (Cache-busted)
+    fetch('/api/menu?t=' + Date.now(), { cache: 'no-store' })
         .then(res => res.json())
         .then(data => {
             if (data && !data.error) {

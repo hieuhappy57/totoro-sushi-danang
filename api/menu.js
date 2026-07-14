@@ -934,6 +934,11 @@ export default async function handler(req, res) {
     res.setHeader('Access-Control-Allow-Methods', 'GET, POST, DELETE, OPTIONS');
     res.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
+    // Disable caching completely
+    res.setHeader('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.setHeader('Pragma', 'no-cache');
+    res.setHeader('Expires', '0');
+
     if (req.method === 'OPTIONS') {
         return res.status(200).end();
     }
@@ -1029,29 +1034,16 @@ export default async function handler(req, res) {
                 }
             };
 
-            const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/menu?documentId=${item.id}&key=${apiKey}`;
+            // Use PATCH with updateMask to handle both creation and editing in a single operation
+            const fields = ['id', 'name', 'category', 'price', 'image', 'desc', 'spicy', 'cooked', 'raw', 'childFriendly', 'bestSeller', 'isNew'];
+            const updateMaskQuery = fields.map(f => `updateMask.fieldPaths=${f}`).join('&');
+            const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/menu/${item.id}?${updateMaskQuery}&key=${apiKey}`;
+
             const response = await fetch(url, {
-                method: 'POST',
+                method: 'PATCH',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify(firestorePayload)
             });
-
-            // If it already exists, Firestore returns error ALREADY_EXISTS. In that case, we PATCH (update) it!
-            if (response.status === 409) {
-                const patchUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/menu/${item.id}?key=${apiKey}`;
-                const patchResponse = await fetch(patchUrl, {
-                    method: 'PATCH',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(firestorePayload)
-                });
-                
-                const patchData = await patchResponse.json();
-                if (patchResponse.ok) {
-                    return res.status(200).json({ success: true, id: item.id, updated: true });
-                } else {
-                    return res.status(patchResponse.status).json({ error: patchData.error?.message || "Failed to update menu item." });
-                }
-            }
 
             const data = await response.json();
 
@@ -1059,7 +1051,7 @@ export default async function handler(req, res) {
                 return res.status(200).json({ success: true, id: item.id });
             } else {
                 return res.status(response.status).json({ 
-                    error: data.error?.message || "Failed to write menu item.",
+                    error: data.error?.message || "Failed to write menu item to Firestore.",
                     details: data
                 });
             }
