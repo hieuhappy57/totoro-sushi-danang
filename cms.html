@@ -741,19 +741,21 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ id: orderId, status: newStatus })
                 })
-                .then(res => res.json())
+                .then(async res => {
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.error || "Lỗi cập nhật đơn hàng từ máy chủ");
+                    return data;
+                })
                 .then(data => {
-                    if (data.fallback) {
-                        localStorage.setItem('totoro_orders', JSON.stringify(CMS_ORDERS));
-                    }
+                    localStorage.setItem('totoro_orders', JSON.stringify(CMS_ORDERS));
                     showAlert(`Đã duyệt đơn ${orderId} chuyển sang: "${newStatus}"!`);
                     refreshCmsOrders();
                     updateStatistics();
                 })
                 .catch(err => {
-                    console.warn("Backend error updating order, falling back to LocalStorage:", err);
+                    console.error("Backend error updating order:", err);
                     localStorage.setItem('totoro_orders', JSON.stringify(CMS_ORDERS));
-                    showAlert(`Đã duyệt đơn ${orderId} chuyển sang: "${newStatus}" (Offline)!`);
+                    showAlert('Lỗi: ' + err.message, 'error');
                     refreshCmsOrders();
                     updateStatistics();
                 });
@@ -817,19 +819,21 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ id: bookingId, status: newStatus })
                 })
-                .then(res => res.json())
+                .then(async res => {
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.error || "Lỗi cập nhật lịch đặt từ máy chủ");
+                    return data;
+                })
                 .then(data => {
-                    if (data.fallback) {
-                        localStorage.setItem('totoro_bookings', JSON.stringify(CMS_BOOKINGS));
-                    }
+                    localStorage.setItem('totoro_bookings', JSON.stringify(CMS_BOOKINGS));
                     showAlert(`Đã cập nhật trạng thái lịch đặt ${bookingId} thành "${newStatus}"!`);
                     refreshCmsBookings();
                     updateStatistics();
                 })
                 .catch(err => {
-                    console.warn("Backend error updating booking, falling back to LocalStorage:", err);
+                    console.error("Backend error updating booking:", err);
                     localStorage.setItem('totoro_bookings', JSON.stringify(CMS_BOOKINGS));
-                    showAlert(`Đã cập nhật trạng thái lịch đặt ${bookingId} thành "${newStatus}" (Offline)!`);
+                    showAlert('Lỗi: ' + err.message, 'error');
                     refreshCmsBookings();
                     updateStatistics();
                 });
@@ -903,7 +907,11 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ id: id })
                 })
-                .then(res => res.json())
+                .then(async res => {
+                    const data = await res.json();
+                    if (!res.ok) throw new Error(data.error || "Lỗi xóa món ăn từ máy chủ");
+                    return data;
+                })
                 .then(data => {
                     // Always save to LocalStorage to keep fallback cache in sync
                     localStorage.setItem('totoro_menu', JSON.stringify(CMS_MENU));
@@ -912,9 +920,9 @@
                     updateStatistics();
                 })
                 .catch(err => {
-                    console.warn("Backend error deleting item, falling back to LocalStorage:", err);
+                    console.error("Backend error deleting item:", err);
                     localStorage.setItem('totoro_menu', JSON.stringify(CMS_MENU));
-                    showAlert('Xóa món ăn thành công (Offline)!');
+                    showAlert('Lỗi: ' + err.message, 'error');
                     refreshCmsMenuTable();
                     updateStatistics();
                 });
@@ -1030,7 +1038,11 @@
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(productData)
                     })
-                    .then(res => res.json())
+                    .then(async res => {
+                        const data = await res.json();
+                        if (!res.ok) throw new Error(data.error || "Lỗi lưu món ăn từ máy chủ");
+                        return data;
+                    })
                     .then(data => {
                         // Always save to LocalStorage to keep fallback cache in sync
                         localStorage.setItem('totoro_menu', JSON.stringify(CMS_MENU));
@@ -1040,9 +1052,9 @@
                         updateStatistics();
                     })
                     .catch(err => {
-                        console.warn("Backend error saving item, falling back to LocalStorage:", err);
+                        console.error("Backend error saving item:", err);
                         localStorage.setItem('totoro_menu', JSON.stringify(CMS_MENU));
-                        showAlert(id ? 'Cập nhật món ăn thành công (Offline)!' : 'Thêm món ăn mới thành công (Offline)!');
+                        showAlert('Lỗi: ' + err.message, 'error');
                         closeModal();
                         refreshCmsMenuTable();
                         updateStatistics();
