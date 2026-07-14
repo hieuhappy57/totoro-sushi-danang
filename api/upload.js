@@ -50,9 +50,10 @@ export default async function handler(req, res) {
 
         // Prepare Firebase Storage Upload URL
         // GCS REST API requires query parameter uploadType=media for direct binary uploads
-        const uploadUrl = `https://firebasestorage.googleapis.com/v0/b/${projectId}.appspot.com/o?name=${encodeURIComponent(filePath)}&uploadType=media`;
+        let bucket = process.env.FIREBASE_STORAGE_BUCKET || `${projectId}.firebasestorage.app`;
+        let uploadUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket}/o?name=${encodeURIComponent(filePath)}&uploadType=media`;
 
-        const response = await fetch(uploadUrl, {
+        let response = await fetch(uploadUrl, {
             method: 'POST',
             headers: {
                 'Content-Type': mimeType,
@@ -60,6 +61,20 @@ export default async function handler(req, res) {
             },
             body: buffer
         });
+
+        // Fallback: If newer .firebasestorage.app domain fails (e.g. returns 404), try older .appspot.com suffix
+        if (response.status === 404 && !process.env.FIREBASE_STORAGE_BUCKET) {
+            bucket = `${projectId}.appspot.com`;
+            uploadUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket}/o?name=${encodeURIComponent(filePath)}&uploadType=media`;
+            response = await fetch(uploadUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': mimeType,
+                    'Content-Length': buffer.length.toString()
+                },
+                body: buffer
+            });
+        }
 
         const data = await response.json();
 
@@ -69,7 +84,7 @@ export default async function handler(req, res) {
             const token = data.downloadTokens || data.metadata?.firebaseStorageDownloadTokens || "";
             
             // Construct the public media URL
-            const publicUrl = `https://firebasestorage.googleapis.com/v0/b/${projectId}.appspot.com/o/${encodeURIComponent(filePath)}?alt=media&token=${token}`;
+            const publicUrl = `https://firebasestorage.googleapis.com/v0/b/${bucket}/o/${encodeURIComponent(filePath)}?alt=media&token=${token}`;
             
             return res.status(200).json({
                 success: true,
