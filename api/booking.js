@@ -18,6 +18,7 @@ export default async function handler(req, res) {
 
     const projectId = process.env.FIREBASE_PROJECT_ID;
     const apiKey = process.env.FIREBASE_API_KEY;
+    const dbId = process.env.FIREBASE_DATABASE_ID || "(default)";
 
     // Check if configuration is missing -> Fallback Mode
     const isFallbackMode = !projectId || !apiKey;
@@ -55,7 +56,7 @@ export default async function handler(req, res) {
                 }
             };
 
-            const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/bookings?documentId=${booking.id}&key=${apiKey}`;
+            const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${dbId}/documents/bookings?documentId=${booking.id}&key=${apiKey}`;
             const response = await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -86,15 +87,15 @@ export default async function handler(req, res) {
                 });
             }
 
-            const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/bookings?key=${apiKey}`;
+            const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${dbId}/documents/bookings?key=${apiKey}`;
             const response = await fetch(url);
             const data = await response.json();
 
             if (!response.ok) {
                 // Check if it is a database missing error (which also returns 404 in Firestore REST API)
-                if (data.error && data.error.message && data.error.message.includes("database (default) does not exist")) {
+                if (data.error && data.error.message && data.error.message.includes(`database ${dbId} does not exist`)) {
                     return res.status(404).json({ 
-                        error: "Cơ sở dữ liệu Firestore Database '(default)' chưa được khởi tạo. Vui lòng truy cập Firebase Console tại địa chỉ https://console.firebase.google.com/project/totoro-7c2e7/firestore để nhấn 'Tạo cơ sở dữ liệu'."
+                        error: `Cơ sở dữ liệu Firestore Database '${dbId}' chưa được khởi tạo. Vui lòng truy cập Firebase Console tại địa chỉ https://console.firebase.google.com/project/totoro-7c2e7/firestore để nhấn 'Tạo cơ sở dữ liệu'.`
                     });
                 }
                 // If collection is empty, Firestore returns 404. Let's return empty array.
@@ -145,7 +146,7 @@ export default async function handler(req, res) {
             }
 
             // Firestore PATCH url with updateMask to target only the status field
-            const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/bookings/${id}?updateMask.fieldPaths=status&key=${apiKey}`;
+            const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${dbId}/documents/bookings/${id}?updateMask.fieldPaths=status&key=${apiKey}`;
             
             const payload = {
                 fields: {

@@ -945,6 +945,7 @@ export default async function handler(req, res) {
 
     const projectId = process.env.FIREBASE_PROJECT_ID;
     const apiKey = process.env.FIREBASE_API_KEY;
+    const dbId = process.env.FIREBASE_DATABASE_ID || "(default)";
 
     // Check if configuration is missing -> Fallback Mode
     const isFallbackMode = !projectId || !apiKey;
@@ -958,20 +959,20 @@ export default async function handler(req, res) {
                 });
             }
 
-            const getUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/menu?key=${apiKey}`;
+            const getUrl = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${dbId}/documents/menu?key=${apiKey}`;
             const response = await fetch(getUrl);
             const data = await response.json();
 
             if (!response.ok) {
                 // Check if it is a database missing error (which also returns 404 in Firestore REST API)
-                if (data.error && data.error.message && data.error.message.includes("database (default) does not exist")) {
+                if (data.error && data.error.message && data.error.message.includes(`database ${dbId} does not exist`)) {
                     return res.status(404).json({ 
-                        error: "Cơ sở dữ liệu Firestore Database '(default)' chưa được khởi tạo. Vui lòng truy cập Firebase Console tại địa chỉ https://console.firebase.google.com/project/totoro-7c2e7/firestore để nhấn 'Tạo cơ sở dữ liệu'."
+                        error: `Cơ sở dữ liệu Firestore Database '${dbId}' chưa được khởi tạo. Vui lòng truy cập Firebase Console tại địa chỉ https://console.firebase.google.com/project/totoro-7c2e7/firestore để nhấn 'Tạo cơ sở dữ liệu'.`
                     });
                 }
                 // If it's a 404 (Collection doesn't exist yet), let's auto-seed!
                 if (response.status === 404 || !data.documents) {
-                    await seedDefaultMenu(projectId, apiKey);
+                    await seedDefaultMenu(projectId, apiKey, dbId);
                     return res.status(200).json(DEFAULT_MENU_ITEMS);
                 }
                 return res.status(response.status).json({ 
@@ -981,7 +982,7 @@ export default async function handler(req, res) {
 
             // If empty collection
             if (!data.documents || data.documents.length === 0) {
-                await seedDefaultMenu(projectId, apiKey);
+                await seedDefaultMenu(projectId, apiKey, dbId);
                 return res.status(200).json(DEFAULT_MENU_ITEMS);
             }
 
@@ -1043,7 +1044,7 @@ export default async function handler(req, res) {
             // Use PATCH with updateMask to handle both creation and editing in a single operation
             const fields = ['id', 'name', 'category', 'price', 'image', 'desc', 'spicy', 'cooked', 'raw', 'childFriendly', 'bestSeller', 'isNew'];
             const updateMaskQuery = fields.map(f => `updateMask.fieldPaths=${f}`).join('&');
-            const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/menu/${item.id}?${updateMaskQuery}&key=${apiKey}`;
+            const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${dbId}/documents/menu/${item.id}?${updateMaskQuery}&key=${apiKey}`;
 
             const response = await fetch(url, {
                 method: 'PATCH',
@@ -1078,7 +1079,7 @@ export default async function handler(req, res) {
                 return res.status(200).json({ success: true, fallback: true });
             }
 
-            const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/menu/${id}?key=${apiKey}`;
+            const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${dbId}/documents/menu/${id}?key=${apiKey}`;
             const response = await fetch(url, { method: 'DELETE' });
 
             if (response.ok) {
@@ -1096,7 +1097,7 @@ export default async function handler(req, res) {
 }
 
 // Private helper to seed database on first run
-async function seedDefaultMenu(projectId, apiKey) {
+async function seedDefaultMenu(projectId, apiKey, dbId) {
     try {
         console.log("Seeding Firestore with default menu items...");
         for (const item of DEFAULT_MENU_ITEMS) {
@@ -1116,7 +1117,7 @@ async function seedDefaultMenu(projectId, apiKey) {
                     isNew: { booleanValue: !!item.isNew }
                 }
             };
-            const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/(default)/documents/menu?documentId=${item.id}&key=${apiKey}`;
+            const url = `https://firestore.googleapis.com/v1/projects/${projectId}/databases/${dbId}/documents/menu?documentId=${item.id}&key=${apiKey}`;
             await fetch(url, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
