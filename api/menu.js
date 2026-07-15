@@ -963,6 +963,12 @@ export default async function handler(req, res) {
             const data = await response.json();
 
             if (!response.ok) {
+                // Check if it is a database missing error (which also returns 404 in Firestore REST API)
+                if (data.error && data.error.message && data.error.message.includes("database (default) does not exist")) {
+                    return res.status(404).json({ 
+                        error: "Cơ sở dữ liệu Firestore Database '(default)' chưa được khởi tạo. Vui lòng truy cập Firebase Console tại địa chỉ https://console.firebase.google.com/project/totoro-7c2e7/firestore để nhấn 'Tạo cơ sở dữ liệu'."
+                    });
+                }
                 // If it's a 404 (Collection doesn't exist yet), let's auto-seed!
                 if (response.status === 404 || !data.documents) {
                     await seedDefaultMenu(projectId, apiKey);

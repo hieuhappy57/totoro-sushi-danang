@@ -977,6 +977,11 @@ document.addEventListener('DOMContentLoaded', function() {
                     loadLocalMenuFallback();
                 } else if (Array.isArray(data)) {
                     MENU_ITEMS = data;
+                    try {
+                        localStorage.setItem('totoro_menu', JSON.stringify(data));
+                    } catch (e) {
+                        console.warn("Failed to cache menu in localStorage:", e);
+                    }
                 } else {
                     loadLocalMenuFallback();
                 }
